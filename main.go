@@ -1,11 +1,10 @@
-package tests
+package main
 
 import (
 	"gitee.com/QQXQQ/Aix/renderer"
-	"testing"
 )
 
-func Test1(t *testing.T) {
+func main() {
 	nodeDOM := renderer.ParserHTML(`
 		<div  id="container" name='QQxQQ' age=18 >
 			<ul class="ul">

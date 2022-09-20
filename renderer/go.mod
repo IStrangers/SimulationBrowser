@@ -1,11 +1,7 @@
-module renderer
+module gitee.com/QQXQQ/Aix/renderer
 
 go 1.19
 
-require (
-	common v1.0.0
-)
+require gitee.com/QQXQQ/Aix/common v0.0.0
 
-replace (
-	common => ../common
-)
+replace gitee.com/QQXQQ/Aix/common => ../common

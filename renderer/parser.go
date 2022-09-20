@@ -1,7 +1,7 @@
 package renderer
 
 import (
-	"renderer/structs"
+	"gitee.com/QQXQQ/Aix/renderer/structs"
 )
 
 func ParserHTML(html string) *structs.NodeDOM {

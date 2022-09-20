@@ -1,6 +1,7 @@
 package structs
 
 type Attribute struct {
-	name  string
-	value string
+	Name     string
+	Value    string
+	Location *Selection
 }

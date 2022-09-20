@@ -1,9 +1,13 @@
 package structs
 
 import (
-	"common"
+	"gitee.com/QQXQQ/Aix/common"
+	"regexp"
 	"strings"
 )
+
+var elementTagRegexp = regexp.MustCompile(`^<\/?([A-z][^ \t\r\n/>]*)`)
+var elementAttrRegexp = regexp.MustCompile(`^[^\t\r\n\f />][^\t\r\n\f />=]*`)
 
 /*
 创建Parser
@@ -35,7 +39,7 @@ type Parser struct {
 */
 func (parser *Parser) ParserHTML() *NodeDOM {
 	rootNodeDOM := parser.createRootNodeDOM()
-	rootNodeDOM.Children = parser.ParserChildren(rootNodeDOM)
+	rootNodeDOM.Children = parser.parserChildren(rootNodeDOM)
 	return rootNodeDOM
 }
 
@@ -164,16 +168,134 @@ func (parser *Parser) parseComment(parent *NodeDOM) *NodeDOM {
 解析Element
 */
 func (parser *Parser) parseElement(parent *NodeDOM) *NodeDOM {
+	nodeDOM := parser.parseElementTag(parent)
+	nodeDOM.Children = parser.parserChildren(nodeDOM)
+	if strings.HasPrefix(parser.HTML, "</") {
+		parser.parseElementTag(parent)
+	}
+	nodeDOM.Location = parser.getSelection(nodeDOM.Location.StartCursor, parser.getCursor())
+	return nodeDOM
+}
 
+/*
+	解析标签
+*/
+func (parser *Parser) parseElementTag(parent *NodeDOM) *NodeDOM {
+	startCursor := parser.getCursor()
+	tagName := elementTagRegexp.FindString(parser.HTML)
+	if tagName == "" {
+	}
+	parser.advanceBy(len(tagName))
+	parser.advanceBySpaces()
+	tagName = strings.ToUpper(tagName[1:])
+	attributes := parser.parseElementAttributes()
+	isSelfClosing := strings.HasPrefix(parser.HTML, "/>")
+	if isSelfClosing {
+		parser.advanceBy(2)
+	} else {
+		parser.advanceBy(1)
+	}
+	return &NodeDOM{
+		Parent:        parent,
+		NodeType:      NodeType_Element,
+		NodeName:      tagName,
+		IsSelfClosing: isSelfClosing,
+		Attributes:    attributes,
+		Location:      parser.getSelection(startCursor, parser.getCursor()),
+	}
+}
+
+/*
+	解析属性
+*/
+func (parser *Parser) parseElementAttributes() []*Attribute {
+	var attributes []*Attribute
+	for !strings.HasPrefix(parser.HTML, ">") && !parser.isEnd() {
+		attr := parser.parseElementAttribute()
+		attributes = append(attributes, attr)
+		parser.advanceBySpaces()
+	}
+	return attributes
+}
+
+/*
+解析属性
+*/
+func (parser *Parser) parseElementAttribute() *Attribute {
+	startCursor := parser.getCursor()
+	attrName := elementAttrRegexp.FindString(parser.HTML)
+	if attrName == "" {
+	}
+	var value string
+	parser.advanceBy(len(attrName))
+	parser.advanceBySpaces()
+	if strings.HasPrefix(parser.HTML, "=") {
+		parser.advanceBy(1)
+		parser.advanceBySpaces()
+		value = parser.parseElementAttributeValue()
+	}
+	return &Attribute{
+		Name:     attrName,
+		Value:    value,
+		Location: parser.getSelection(startCursor, parser.getCursor()),
+	}
+}
+
+/*
+解析属性值
+*/
+func (parser *Parser) parseElementAttributeValue() string {
+	startCursor := parser.getCursor()
+	quote := string(parser.HTML[0])
+
+	var value string
+	if quote == `"` || quote == `'` {
+		parser.advanceBy(1)
+		endQuoteIndex := strings.Index(parser.HTML, quote)
+		value = parser.parseTextData(endQuoteIndex)
+		parser.advanceBy(1)
+	} else {
+		endSpacesIndex := strings.Index(parser.HTML, " ")
+		endCloseIndex := strings.Index(parser.HTML, ">")
+		if endCloseIndex == -1 {
+			endCloseIndex = strings.Index(parser.HTML, "/>")
+		}
+		endIndex := endSpacesIndex
+		if endSpacesIndex == -1 || endSpacesIndex > endCloseIndex {
+			endIndex = endCloseIndex
+		}
+		value = parser.parseTextData(endIndex)
+	}
+
+	parser.getSelection(startCursor, parser.getCursor())
+	return value
 }
 
 /*
 解析文本
 */
 func (parser *Parser) parseText(parent *NodeDOM) *NodeDOM {
-
+	tokens := []string{"<"}
+	endTextIndex := len(parser.HTML)
+	for i := 0; i < len(tokens); i++ {
+		index := strings.Index(parser.HTML, tokens[i])
+		if index != -1 && index < endTextIndex {
+			endTextIndex = index
+		}
+	}
+	startCursor := parser.getCursor()
+	content := parser.parseTextData(endTextIndex)
+	return &NodeDOM{
+		Parent:      parent,
+		NodeType:    NodeType_Text,
+		TextContent: content,
+		Location:    parser.getSelection(startCursor, parser.getCursor()),
+	}
 }
 
+/*
+	解析文本
+*/
 func (parser *Parser) parseTextData(endTextIndex int) string {
 	data := parser.HTML[0:endTextIndex]
 	parser.advanceBy(endTextIndex)
@@ -183,9 +305,9 @@ func (parser *Parser) parseTextData(endTextIndex int) string {
 /*
 解析子节点
 */
-func (parser *Parser) ParserChildren(parent *NodeDOM) []*NodeDOM {
+func (parser *Parser) parserChildren(parent *NodeDOM) []*NodeDOM {
 	var children []*NodeDOM
-	for parser.isEnd() {
+	for !parser.isEnd() {
 		var node *NodeDOM
 		if parser.isComment() {
 			node = parser.parseComment(parent)

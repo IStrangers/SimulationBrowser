@@ -8,11 +8,12 @@ const (
 )
 
 type NodeDOM struct {
-	Parent      *NodeDOM
-	NodeType    int
-	NodeName    string
-	Attributes  *[]Attribute
-	TextContent string
-	Children    []*NodeDOM
-	Location    *Selection
+	Parent        *NodeDOM
+	NodeType      int
+	NodeName      string
+	IsSelfClosing bool
+	Attributes    []*Attribute
+	TextContent   string
+	Children      []*NodeDOM
+	Location      *Selection
 }
