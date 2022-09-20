@@ -2,4 +2,4 @@ package common
 
 import "regexp"
 
-var REGEXP_CONSTANT_SPACES = regexp.MustCompile(`/^[ \n\r\t\f]+/`)
+var Regexp_Constant_Spaces = regexp.MustCompile(`/^[ \n\r\t\f]+/`)

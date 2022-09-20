@@ -40,7 +40,7 @@ func (parser *Parser) ParserHTML() *NodeDOM {
 }
 
 /*
-	获取当前解析进度
+获取当前解析进度
 */
 func (parser *Parser) getCursor() *Cursor {
 	cursor := &Cursor{
@@ -58,7 +58,7 @@ func (parser *Parser) updateCursor(cursor *Cursor) {
 }
 
 /*
-	获取当前解析段信息
+获取当前解析段信息
 */
 func (parser *Parser) getSelection(startCursor *Cursor, endCursor *Cursor) *Selection {
 	selection := &Selection{
@@ -101,50 +101,83 @@ func (parser *Parser) advanceBy(length int) {
 /*
  */
 func (parser *Parser) advanceBySpaces() {
-	result := common.REGEXP_CONSTANT_SPACES.FindString(parser.HTML)
+	result := common.Regexp_Constant_Spaces.FindString(parser.HTML)
 	parser.advanceBy(len(result))
 }
 
 /*
-	是否是结束符
+是否是结束符
 */
 func (parser *Parser) isEnd() bool {
 	return parser.HTML == "" || strings.HasPrefix(parser.HTML, "</")
 }
 
 /*
-	是否是注释
+是否是注释
 */
 func (parser *Parser) isComment() bool {
 	return strings.HasPrefix(parser.HTML, "<!--")
 }
 
 /*
-	是否是Element
+是否是Element
 */
 func (parser *Parser) isElement() bool {
 	return strings.HasPrefix(parser.HTML, "<")
 }
 
 /*
-	解析注释
+解析注释
 */
 func (parser *Parser) parseComment(parent *NodeDOM) *NodeDOM {
+	startCursor := parser.getCursor()
+	commentStart := "<!--"
+	commentEnd := "-->"
 
+	parser.advanceBy(len(commentStart))
+	parser.advanceBySpaces()
+
+	innerStartCursor := parser.getCursor()
+	innerEndCursor := parser.getCursor()
+
+	endIndex := strings.Index(parser.HTML, commentEnd)
+	preContent := parser.parseTextData(endIndex)
+	content := strings.TrimSpace(preContent)
+	startOffset := strings.Index(preContent, content)
+
+	if startOffset > 0 {
+		parser.advancePositionWithMutation(innerStartCursor, preContent, startOffset)
+	}
+	endOffset := startOffset + len(content)
+	parser.advancePositionWithMutation(innerEndCursor, preContent, endOffset)
+	parser.advanceBy(len(commentEnd))
+
+	return &NodeDOM{
+		Parent:      parent,
+		NodeType:    NodeType_Common,
+		TextContent: content,
+		Location:    parser.getSelection(startCursor, parser.getCursor()),
+	}
 }
 
 /*
-	解析Element
+解析Element
 */
 func (parser *Parser) parseElement(parent *NodeDOM) *NodeDOM {
 
 }
 
 /*
-	解析文本
+解析文本
 */
 func (parser *Parser) parseText(parent *NodeDOM) *NodeDOM {
 
+}
+
+func (parser *Parser) parseTextData(endTextIndex int) string {
+	data := parser.HTML[0:endTextIndex]
+	parser.advanceBy(endTextIndex)
+	return data
 }
 
 /*
@@ -171,6 +204,7 @@ func (parser *Parser) ParserChildren(parent *NodeDOM) []*NodeDOM {
 */
 func (parser *Parser) createRootNodeDOM() *NodeDOM {
 	rootNodeDOM := &NodeDOM{
+		NodeType:   NodeType_Root,
 		NodeName:   "ROOT",
 		Attributes: nil,
 		Children:   nil,
