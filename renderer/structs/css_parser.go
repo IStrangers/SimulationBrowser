@@ -1,6 +1,7 @@
 package structs
 
 import (
+	"errors"
 	"gitee.com/QQXQQ/Aix/common"
 	"strings"
 )
@@ -167,18 +168,7 @@ func (parser *CSSParser) parserDeclaration() *CSSDeclaration {
 	if endIndex != -1 {
 		content = strings.TrimSpace(parser.CSS[0:endIndex])
 		parser.advanceBySpaces()
-		for _, item := range strings.Split(content, ";") {
-			kv := strings.Split(strings.TrimSpace(item), ":")
-			if len(kv) < 2 {
-				continue
-			}
-			name := kv[0]
-			value := kv[1]
-			items = append(items, &CSSDeclarationItem{
-				Name:  name,
-				Value: value,
-			})
-		}
+		items = parser.parserDeclarationItems(content)
 	}
 
 	parser.advanceBy(len(content))
@@ -190,6 +180,32 @@ func (parser *CSSParser) parserDeclaration() *CSSDeclaration {
 		Location: parser.getSelection(startCursor, parser.getCursor()),
 	}
 	return declaration
+}
+
+func (parser *CSSParser) parserDeclarationItems(cssItems string) []*CSSDeclarationItem {
+	var items []*CSSDeclarationItem
+	for _, cssItem := range strings.Split(cssItems, ";") {
+		item, err := parser.parserDeclarationItem(cssItem)
+		if err != nil {
+			continue
+		}
+		items = append(items, item)
+	}
+	return items
+}
+
+func (parser *CSSParser) parserDeclarationItem(css string) (*CSSDeclarationItem, error) {
+	kv := strings.Split(strings.TrimSpace(css), ":")
+	if len(kv) < 2 {
+		return nil, errors.New("The length after splitting is less than 2")
+	}
+	name := kv[0]
+	value := kv[1]
+	item := &CSSDeclarationItem{
+		Name:  name,
+		Value: value,
+	}
+	return item, nil
 }
 
 func (parser *CSSParser) createStyleSheet() *CSSStyleSheet {
