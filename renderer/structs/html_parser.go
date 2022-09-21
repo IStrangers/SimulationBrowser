@@ -12,8 +12,10 @@ var elementAttrRegexp = regexp.MustCompile(`^[^\t\r\n\f />][^\t\r\n\f />=]*`)
 /*
 创建Parser
 */
-func CreateHTMLParser(html string) *Parser {
+func CreateHTMLParser(html string, options *ParserOptions) *Parser {
+	html = strings.TrimSpace(html)
 	parser := &Parser{
+		Options:      options,
 		OriginalHTML: html,
 		HTML:         html,
 		Line:         1,
@@ -23,10 +25,15 @@ func CreateHTMLParser(html string) *Parser {
 	return parser
 }
 
+type ParserOptions struct {
+	RemoveExtraSpaces bool
+}
+
 /*
 Parser结构
 */
 type Parser struct {
+	Options      *ParserOptions
 	OriginalHTML string
 	HTML         string
 	Line         int
@@ -178,7 +185,7 @@ func (parser *Parser) parseElement(parent *NodeDOM) *NodeDOM {
 }
 
 /*
-	解析标签
+解析标签
 */
 func (parser *Parser) parseElementTag(parent *NodeDOM) *NodeDOM {
 	startCursor := parser.getCursor()
@@ -206,7 +213,7 @@ func (parser *Parser) parseElementTag(parent *NodeDOM) *NodeDOM {
 }
 
 /*
-	解析属性
+解析属性
 */
 func (parser *Parser) parseElementAttributes() []*Attribute {
 	var attributes []*Attribute
@@ -294,7 +301,7 @@ func (parser *Parser) parseText(parent *NodeDOM) *NodeDOM {
 }
 
 /*
-	解析文本
+解析文本
 */
 func (parser *Parser) parseTextData(endTextIndex int) string {
 	data := parser.HTML[0:endTextIndex]
@@ -315,6 +322,9 @@ func (parser *Parser) parserChildren(parent *NodeDOM) []*NodeDOM {
 			node = parser.parseElement(parent)
 		} else {
 			node = parser.parseText(parent)
+			if parser.Options.RemoveExtraSpaces && strings.TrimSpace(node.TextContent) == "" {
+				continue
+			}
 		}
 		children = append(children, node)
 	}

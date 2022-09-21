@@ -5,6 +5,13 @@ import (
 )
 
 func ParserHTML(html string) *structs.NodeDOM {
-	parser := structs.CreateHTMLParser(html)
+	options := &structs.ParserOptions{
+		RemoveExtraSpaces: true,
+	}
+	return ParserHTMLByOptions(html, options)
+}
+
+func ParserHTMLByOptions(html string, options *structs.ParserOptions) *structs.NodeDOM {
+	parser := structs.CreateHTMLParser(html, options)
 	return parser.ParserHTML()
 }
