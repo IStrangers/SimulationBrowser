@@ -2,6 +2,6 @@ package structs
 
 type CSSDeclaration struct {
 	Content  string
-	Items    *CSSDeclarationItem
+	Items    []*CSSDeclarationItem
 	Location *Selection
 }

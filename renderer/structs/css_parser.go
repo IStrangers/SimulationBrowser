@@ -122,13 +122,16 @@ func (parser *CSSParser) parserCSSRule() *CSSRule {
 	startCursor := parser.getCursor()
 
 	selector := parser.parserSelector()
+	parser.advanceBy(1)
 	declaration := parser.parserDeclaration()
+	parser.advanceBy(1)
 
-	return &CSSRule{
+	cssRule := &CSSRule{
 		Selector:    selector,
 		Declaration: declaration,
 		Location:    parser.getSelection(startCursor, parser.getCursor()),
 	}
+	return cssRule
 }
 
 func (parser *CSSParser) parserSelector() *CSSSelector {
@@ -145,14 +148,7 @@ func (parser *CSSParser) parserSelector() *CSSSelector {
 }
 
 func (parser *CSSParser) parserSelectorKey() string {
-	length := len(parser.CSS)
-	endIndex := -1
-	for index := 0; index < length; index++ {
-		if string(parser.CSS[index]) == "{" {
-			endIndex = index
-			break
-		}
-	}
+	endIndex := strings.Index(parser.CSS, "{")
 	if endIndex != -1 {
 		selector := parser.CSS[0:endIndex]
 		parser.advanceBy(len(selector))
@@ -163,26 +159,36 @@ func (parser *CSSParser) parserSelectorKey() string {
 }
 
 func (parser *CSSParser) parserDeclaration() *CSSDeclaration {
-	parser.advanceBy(1)
-	parser.advanceBySpaces()
 	startCursor := parser.getCursor()
 
+	endIndex := strings.Index(parser.CSS, "}")
 	var content string
-	length := len(parser.CSS)
-	for index := 0; index < length; index++ {
-		if string(parser.CSS[index]) == "}" {
-			content = parser.OriginalCSS[startCursor.Offset : startCursor.Offset+index]
-			break
+	var items []*CSSDeclarationItem
+	if endIndex != -1 {
+		content = strings.TrimSpace(parser.CSS[0:endIndex])
+		parser.advanceBySpaces()
+		for _, item := range strings.Split(content, ";") {
+			kv := strings.Split(strings.TrimSpace(item), ":")
+			if len(kv) < 2 {
+				continue
+			}
+			name := kv[0]
+			value := kv[1]
+			items = append(items, &CSSDeclarationItem{
+				Name:  name,
+				Value: value,
+			})
 		}
-
 	}
+
+	parser.advanceBy(len(content))
+	parser.advanceBySpaces()
 
 	declaration := &CSSDeclaration{
 		Content:  content,
+		Items:    items,
 		Location: parser.getSelection(startCursor, parser.getCursor()),
 	}
-	parser.advanceBySpaces()
-	parser.advanceBy(1)
 	return declaration
 }
 
