@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	nodeDOM := renderer.ParserHTML(`
+	nodeDOM := renderer.ParseHTML(`
 		<div  id="container" name='QQxQQ' age=18 >
 			<ul class="ul">
 				<li>1</li>
@@ -16,7 +16,7 @@ func main() {
 	`)
 	println(nodeDOM)
 
-	styleSheet := renderer.ParserCSS(`
+	styleSheet := renderer.ParseCSS(`
 		.className {
 			margin: 10px;
 			padding: 10px;

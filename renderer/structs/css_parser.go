@@ -34,9 +34,9 @@ func CreateCSSParser(css string, options *CSSParserOptions) *CSSParser {
 	return parser
 }
 
-func (parser *CSSParser) ParserCSS() *CSSStyleSheet {
+func (parser *CSSParser) ParseCSS() *CSSStyleSheet {
 	styleSheet := parser.createStyleSheet()
-	styleSheet.CSSRules = parser.parserCSSRules()
+	styleSheet.CSSRules = parser.parseCSSRules()
 	return styleSheet
 }
 
@@ -110,21 +110,21 @@ func (parser *CSSParser) isEnd() bool {
 	return parser.CSS == ""
 }
 
-func (parser *CSSParser) parserCSSRules() []*CSSRule {
+func (parser *CSSParser) parseCSSRules() []*CSSRule {
 	var cssRules []*CSSRule
 	for !parser.isEnd() {
-		cssRule := parser.parserCSSRule()
+		cssRule := parser.parseCSSRule()
 		cssRules = append(cssRules, cssRule)
 	}
 	return cssRules
 }
 
-func (parser *CSSParser) parserCSSRule() *CSSRule {
+func (parser *CSSParser) parseCSSRule() *CSSRule {
 	startCursor := parser.getCursor()
 
-	selector := parser.parserSelector()
+	selector := parser.parseSelector()
 	parser.advanceBy(1)
-	declaration := parser.parserDeclaration()
+	declaration := parser.parseDeclaration()
 	parser.advanceBy(1)
 
 	cssRule := &CSSRule{
@@ -135,10 +135,10 @@ func (parser *CSSParser) parserCSSRule() *CSSRule {
 	return cssRule
 }
 
-func (parser *CSSParser) parserSelector() *CSSSelector {
+func (parser *CSSParser) parseSelector() *CSSSelector {
 	parser.advanceBySpaces()
 	startCursor := parser.getCursor()
-	selectorKey := parser.parserSelectorKey()
+	selectorKey := parser.parseSelectorKey()
 	selectors := strings.Split(selectorKey, ",")
 	selector := &CSSSelector{
 		SelectorKey: selectorKey,
@@ -148,7 +148,7 @@ func (parser *CSSParser) parserSelector() *CSSSelector {
 	return selector
 }
 
-func (parser *CSSParser) parserSelectorKey() string {
+func (parser *CSSParser) parseSelectorKey() string {
 	endIndex := strings.Index(parser.CSS, "{")
 	if endIndex != -1 {
 		selector := parser.CSS[0:endIndex]
@@ -159,7 +159,7 @@ func (parser *CSSParser) parserSelectorKey() string {
 	}
 }
 
-func (parser *CSSParser) parserDeclaration() *CSSDeclaration {
+func (parser *CSSParser) parseDeclaration() *CSSDeclaration {
 	startCursor := parser.getCursor()
 
 	endIndex := strings.Index(parser.CSS, "}")
@@ -168,7 +168,7 @@ func (parser *CSSParser) parserDeclaration() *CSSDeclaration {
 	if endIndex != -1 {
 		content = strings.TrimSpace(parser.CSS[0:endIndex])
 		parser.advanceBySpaces()
-		items = parser.parserDeclarationItems(content)
+		items = parser.parseDeclarationItems(content)
 	}
 
 	parser.advanceBy(len(content))
@@ -182,10 +182,10 @@ func (parser *CSSParser) parserDeclaration() *CSSDeclaration {
 	return declaration
 }
 
-func (parser *CSSParser) parserDeclarationItems(cssItems string) []*CSSDeclarationItem {
+func (parser *CSSParser) parseDeclarationItems(cssItems string) []*CSSDeclarationItem {
 	var items []*CSSDeclarationItem
 	for _, cssItem := range strings.Split(cssItems, ";") {
-		item, err := parser.parserDeclarationItem(cssItem)
+		item, err := parser.parseDeclarationItem(cssItem)
 		if err != nil {
 			continue
 		}
@@ -194,7 +194,7 @@ func (parser *CSSParser) parserDeclarationItems(cssItems string) []*CSSDeclarati
 	return items
 }
 
-func (parser *CSSParser) parserDeclarationItem(css string) (*CSSDeclarationItem, error) {
+func (parser *CSSParser) parseDeclarationItem(css string) (*CSSDeclarationItem, error) {
 	kv := strings.Split(strings.TrimSpace(css), ":")
 	if len(kv) < 2 {
 		return nil, errors.New("The length after splitting is less than 2")

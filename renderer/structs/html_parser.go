@@ -44,9 +44,9 @@ func CreateHTMLParser(html string, options *HTMLParserOptions) *HTMLParser {
 /*
 解析节点
 */
-func (parser *HTMLParser) ParserHTML() *NodeDOM {
+func (parser *HTMLParser) ParseHTML() *NodeDOM {
 	rootNodeDOM := parser.createRootNodeDOM()
-	rootNodeDOM.Children = parser.parserChildren(rootNodeDOM)
+	rootNodeDOM.Children = parser.parseChildren(rootNodeDOM)
 	return rootNodeDOM
 }
 
@@ -176,7 +176,7 @@ func (parser *HTMLParser) parseComment(parent *NodeDOM) *NodeDOM {
 */
 func (parser *HTMLParser) parseElement(parent *NodeDOM) *NodeDOM {
 	nodeDOM := parser.parseElementTag(parent)
-	nodeDOM.Children = parser.parserChildren(nodeDOM)
+	nodeDOM.Children = parser.parseChildren(nodeDOM)
 	if strings.HasPrefix(parser.HTML, "</") {
 		parser.parseElementTag(parent)
 	}
@@ -312,7 +312,7 @@ func (parser *HTMLParser) parseTextData(endTextIndex int) string {
 /*
 解析子节点
 */
-func (parser *HTMLParser) parserChildren(parent *NodeDOM) []*NodeDOM {
+func (parser *HTMLParser) parseChildren(parent *NodeDOM) []*NodeDOM {
 	var children []*NodeDOM
 	for !parser.isEnd() {
 		var node *NodeDOM
