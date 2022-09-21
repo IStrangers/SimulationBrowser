@@ -6,7 +6,7 @@ import (
 )
 
 func Test1(t *testing.T) {
-	nodeDOM := renderer.ParserHTML(`
+	nodeDOM := renderer.ParseHTML(`
 		<div  id="container" name='QQxQQ' age=18 >
 			<ul class="ul">
 				<li>1</li>
