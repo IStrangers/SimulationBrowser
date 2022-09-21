@@ -15,4 +15,18 @@ func main() {
 		</div>
 	`)
 	println(nodeDOM)
+
+	styleSheet := renderer.ParserCSS(`
+		.className {
+			margin: 10px;
+			padding: 10px;
+		}
+		#id {
+			color: green;
+		}
+		span {
+			background-color: red;
+		}
+	`)
+	println(styleSheet)
 }

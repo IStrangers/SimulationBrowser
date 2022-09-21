@@ -9,12 +9,28 @@ import (
 var elementTagRegexp = regexp.MustCompile(`^<\/?([A-z][^ \t\r\n/>]*)`)
 var elementAttrRegexp = regexp.MustCompile(`^[^\t\r\n\f />][^\t\r\n\f />=]*`)
 
+type HTMLParserOptions struct {
+	RemoveExtraSpaces bool
+}
+
+/*
+Parser结构
+*/
+type HTMLParser struct {
+	Options      *HTMLParserOptions
+	OriginalHTML string
+	HTML         string
+	Line         int
+	Column       int
+	Offset       int
+}
+
 /*
 创建Parser
 */
-func CreateHTMLParser(html string, options *ParserOptions) *Parser {
+func CreateHTMLParser(html string, options *HTMLParserOptions) *HTMLParser {
 	html = strings.TrimSpace(html)
-	parser := &Parser{
+	parser := &HTMLParser{
 		Options:      options,
 		OriginalHTML: html,
 		HTML:         html,
@@ -25,26 +41,10 @@ func CreateHTMLParser(html string, options *ParserOptions) *Parser {
 	return parser
 }
 
-type ParserOptions struct {
-	RemoveExtraSpaces bool
-}
-
-/*
-Parser结构
-*/
-type Parser struct {
-	Options      *ParserOptions
-	OriginalHTML string
-	HTML         string
-	Line         int
-	Column       int
-	Offset       int
-}
-
 /*
 解析节点
 */
-func (parser *Parser) ParserHTML() *NodeDOM {
+func (parser *HTMLParser) ParserHTML() *NodeDOM {
 	rootNodeDOM := parser.createRootNodeDOM()
 	rootNodeDOM.Children = parser.parserChildren(rootNodeDOM)
 	return rootNodeDOM
@@ -53,7 +53,7 @@ func (parser *Parser) ParserHTML() *NodeDOM {
 /*
 获取当前解析进度
 */
-func (parser *Parser) getCursor() *Cursor {
+func (parser *HTMLParser) getCursor() *Cursor {
 	cursor := &Cursor{
 		parser.Line,
 		parser.Column,
@@ -62,7 +62,7 @@ func (parser *Parser) getCursor() *Cursor {
 	return cursor
 }
 
-func (parser *Parser) updateCursor(cursor *Cursor) {
+func (parser *HTMLParser) updateCursor(cursor *Cursor) {
 	parser.Line = cursor.Line
 	parser.Column = cursor.Column
 	parser.Offset = cursor.Offset
@@ -71,18 +71,18 @@ func (parser *Parser) updateCursor(cursor *Cursor) {
 /*
 获取当前解析段信息
 */
-func (parser *Parser) getSelection(startCursor *Cursor, endCursor *Cursor) *Selection {
+func (parser *HTMLParser) getSelection(startCursor *Cursor, endCursor *Cursor) *Selection {
 	selection := &Selection{
 		StartCursor: startCursor,
 		EndCursor:   endCursor,
-		HTML:        parser.OriginalHTML[startCursor.Offset:endCursor.Offset],
+		Content:     parser.OriginalHTML[startCursor.Offset:endCursor.Offset],
 	}
 	return selection
 }
 
 /*
  */
-func (parser *Parser) advancePositionWithMutation(cursor *Cursor, html string, length int) {
+func (parser *HTMLParser) advancePositionWithMutation(cursor *Cursor, html string, length int) {
 	linesCount := 0
 	linePos := -1
 	for i := 0; i < length; i++ {
@@ -102,7 +102,7 @@ func (parser *Parser) advancePositionWithMutation(cursor *Cursor, html string, l
 
 /*
  */
-func (parser *Parser) advanceBy(length int) {
+func (parser *HTMLParser) advanceBy(length int) {
 	cursor := parser.getCursor()
 	parser.advancePositionWithMutation(cursor, parser.HTML, length)
 	parser.updateCursor(cursor)
@@ -111,7 +111,7 @@ func (parser *Parser) advanceBy(length int) {
 
 /*
  */
-func (parser *Parser) advanceBySpaces() {
+func (parser *HTMLParser) advanceBySpaces() {
 	result := common.Regexp_Constant_Spaces.FindString(parser.HTML)
 	parser.advanceBy(len(result))
 }
@@ -119,28 +119,28 @@ func (parser *Parser) advanceBySpaces() {
 /*
 是否是结束符
 */
-func (parser *Parser) isEnd() bool {
+func (parser *HTMLParser) isEnd() bool {
 	return parser.HTML == "" || strings.HasPrefix(parser.HTML, "</")
 }
 
 /*
 是否是注释
 */
-func (parser *Parser) isComment() bool {
+func (parser *HTMLParser) isComment() bool {
 	return strings.HasPrefix(parser.HTML, "<!--")
 }
 
 /*
 是否是Element
 */
-func (parser *Parser) isElement() bool {
+func (parser *HTMLParser) isElement() bool {
 	return strings.HasPrefix(parser.HTML, "<")
 }
 
 /*
 解析注释
 */
-func (parser *Parser) parseComment(parent *NodeDOM) *NodeDOM {
+func (parser *HTMLParser) parseComment(parent *NodeDOM) *NodeDOM {
 	startCursor := parser.getCursor()
 	commentStart := "<!--"
 	commentEnd := "-->"
@@ -174,7 +174,7 @@ func (parser *Parser) parseComment(parent *NodeDOM) *NodeDOM {
 /*
 解析Element
 */
-func (parser *Parser) parseElement(parent *NodeDOM) *NodeDOM {
+func (parser *HTMLParser) parseElement(parent *NodeDOM) *NodeDOM {
 	nodeDOM := parser.parseElementTag(parent)
 	nodeDOM.Children = parser.parserChildren(nodeDOM)
 	if strings.HasPrefix(parser.HTML, "</") {
@@ -187,7 +187,7 @@ func (parser *Parser) parseElement(parent *NodeDOM) *NodeDOM {
 /*
 解析标签
 */
-func (parser *Parser) parseElementTag(parent *NodeDOM) *NodeDOM {
+func (parser *HTMLParser) parseElementTag(parent *NodeDOM) *NodeDOM {
 	startCursor := parser.getCursor()
 	tagName := elementTagRegexp.FindString(parser.HTML)
 	if tagName == "" {
@@ -215,7 +215,7 @@ func (parser *Parser) parseElementTag(parent *NodeDOM) *NodeDOM {
 /*
 解析属性
 */
-func (parser *Parser) parseElementAttributes() []*Attribute {
+func (parser *HTMLParser) parseElementAttributes() []*Attribute {
 	var attributes []*Attribute
 	for !strings.HasPrefix(parser.HTML, ">") && !parser.isEnd() {
 		attr := parser.parseElementAttribute()
@@ -228,7 +228,7 @@ func (parser *Parser) parseElementAttributes() []*Attribute {
 /*
 解析属性
 */
-func (parser *Parser) parseElementAttribute() *Attribute {
+func (parser *HTMLParser) parseElementAttribute() *Attribute {
 	startCursor := parser.getCursor()
 	attrName := elementAttrRegexp.FindString(parser.HTML)
 	if attrName == "" {
@@ -251,7 +251,7 @@ func (parser *Parser) parseElementAttribute() *Attribute {
 /*
 解析属性值
 */
-func (parser *Parser) parseElementAttributeValue() string {
+func (parser *HTMLParser) parseElementAttributeValue() string {
 	startCursor := parser.getCursor()
 	quote := string(parser.HTML[0])
 
@@ -281,7 +281,7 @@ func (parser *Parser) parseElementAttributeValue() string {
 /*
 解析文本
 */
-func (parser *Parser) parseText(parent *NodeDOM) *NodeDOM {
+func (parser *HTMLParser) parseText(parent *NodeDOM) *NodeDOM {
 	tokens := []string{"<"}
 	endTextIndex := len(parser.HTML)
 	for i := 0; i < len(tokens); i++ {
@@ -303,7 +303,7 @@ func (parser *Parser) parseText(parent *NodeDOM) *NodeDOM {
 /*
 解析文本
 */
-func (parser *Parser) parseTextData(endTextIndex int) string {
+func (parser *HTMLParser) parseTextData(endTextIndex int) string {
 	data := parser.HTML[0:endTextIndex]
 	parser.advanceBy(endTextIndex)
 	return data
@@ -312,7 +312,7 @@ func (parser *Parser) parseTextData(endTextIndex int) string {
 /*
 解析子节点
 */
-func (parser *Parser) parserChildren(parent *NodeDOM) []*NodeDOM {
+func (parser *HTMLParser) parserChildren(parent *NodeDOM) []*NodeDOM {
 	var children []*NodeDOM
 	for !parser.isEnd() {
 		var node *NodeDOM
@@ -334,7 +334,7 @@ func (parser *Parser) parserChildren(parent *NodeDOM) []*NodeDOM {
 /*
 创建Root节点
 */
-func (parser *Parser) createRootNodeDOM() *NodeDOM {
+func (parser *HTMLParser) createRootNodeDOM() *NodeDOM {
 	rootNodeDOM := &NodeDOM{
 		NodeType:   NodeType_Root,
 		NodeName:   "ROOT",
