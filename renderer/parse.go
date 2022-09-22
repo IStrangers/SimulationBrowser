@@ -15,11 +15,11 @@ func ParseHTMLByOptions(html string, options *structs.HTMLParserOptions) *struct
 	return parser.ParseHTML()
 }
 
-func ParseCSS(css string) *structs.CSSStyleSheet {
+func ParseCSS(css string) []*structs.CSSRule {
 	options := &structs.CSSParserOptions{}
 	return ParseCSSByOptions(css, options)
 }
-func ParseCSSByOptions(css string, options *structs.CSSParserOptions) *structs.CSSStyleSheet {
+func ParseCSSByOptions(css string, options *structs.CSSParserOptions) []*structs.CSSRule {
 	parser := structs.CreateCSSParser(css, options)
 	return parser.ParseCSS()
 }

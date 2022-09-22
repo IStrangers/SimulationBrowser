@@ -34,10 +34,9 @@ func CreateCSSParser(css string, options *CSSParserOptions) *CSSParser {
 	return parser
 }
 
-func (parser *CSSParser) ParseCSS() *CSSStyleSheet {
-	styleSheet := parser.createStyleSheet()
-	styleSheet.CSSRules = parser.parseCSSRules()
-	return styleSheet
+func (parser *CSSParser) ParseCSS() []*CSSRule {
+	cssRules := parser.parseCSSRules()
+	return cssRules
 }
 
 /*

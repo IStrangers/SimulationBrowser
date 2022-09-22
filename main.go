@@ -16,7 +16,7 @@ func main() {
 	`)
 	println(nodeDOM)
 
-	styleSheet := renderer.ParseCSS(`
+	cssRules := renderer.ParseCSS(`
 		.className {
 			margin: 10px;
 			padding: 10px;
@@ -28,5 +28,5 @@ func main() {
 			background-color: red;
 		}
 	`)
-	println(styleSheet)
+	println(cssRules)
 }
