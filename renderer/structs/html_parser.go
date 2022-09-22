@@ -18,6 +18,7 @@ Parser结构
 */
 type HTMLParser struct {
 	Options      *HTMLParserOptions
+	Document     *Document
 	OriginalHTML string
 	HTML         string
 	Line         int
@@ -28,10 +29,11 @@ type HTMLParser struct {
 /*
 创建Parser
 */
-func CreateHTMLParser(html string, options *HTMLParserOptions) *HTMLParser {
+func CreateHTMLParser(html string, document *Document, options *HTMLParserOptions) *HTMLParser {
 	html = strings.TrimSpace(html)
 	parser := &HTMLParser{
 		Options:      options,
+		Document:     document,
 		OriginalHTML: html,
 		HTML:         html,
 		Line:         1,
@@ -164,6 +166,7 @@ func (parser *HTMLParser) parseComment(parent *NodeDOM) *NodeDOM {
 	parser.advanceBy(len(commentEnd))
 
 	return &NodeDOM{
+		Document:    parser.Document,
 		Parent:      parent,
 		NodeType:    NodeType_Common,
 		TextContent: content,
@@ -194,7 +197,7 @@ func (parser *HTMLParser) parseElementTag(parent *NodeDOM) *NodeDOM {
 	}
 	parser.advanceBy(len(tagName))
 	parser.advanceBySpaces()
-	tagName = strings.ToUpper(tagName[1:])
+	tagName = strings.ToLower(tagName[1:])
 	attributes := parser.parseElementAttributes()
 	isSelfClosing := strings.HasPrefix(parser.HTML, "/>")
 	if isSelfClosing {
@@ -202,14 +205,34 @@ func (parser *HTMLParser) parseElementTag(parent *NodeDOM) *NodeDOM {
 	} else {
 		parser.advanceBy(1)
 	}
+	initialStyle := GetInitialStyleByAttributes(attributes...)
 	return &NodeDOM{
+		Document:      parser.Document,
 		Parent:        parent,
 		NodeType:      NodeType_Element,
 		NodeName:      tagName,
 		IsSelfClosing: isSelfClosing,
 		Attributes:    attributes,
+		NeedsReflow:   true,
+		NeedsRepaint:  true,
+		Style:         CreateCSSStyleSheetByCSSString(initialStyle),
 		Location:      parser.getSelection(startCursor, parser.getCursor()),
 	}
+}
+
+func GetInitialStyleByAttributes(attributes ...*Attribute) string {
+	initialStyle := ""
+	var newAttributes []any
+	for _, attr := range attributes {
+		newAttributes = append(newAttributes, attr)
+	}
+	attribute := common.Just(newAttributes...).Filter(func(attr any) bool {
+		return attr.(*Attribute).Name == "style"
+	}).First()
+	if attribute != nil {
+		initialStyle = attribute.(*Attribute).Value
+	}
+	return initialStyle
 }
 
 /*
@@ -293,6 +316,7 @@ func (parser *HTMLParser) parseText(parent *NodeDOM) *NodeDOM {
 	startCursor := parser.getCursor()
 	content := parser.parseTextData(endTextIndex)
 	return &NodeDOM{
+		Document:    parser.Document,
 		Parent:      parent,
 		NodeType:    NodeType_Text,
 		TextContent: content,
@@ -336,6 +360,7 @@ func (parser *HTMLParser) parseChildren(parent *NodeDOM) []*NodeDOM {
 */
 func (parser *HTMLParser) createRootNodeDOM() *NodeDOM {
 	rootNodeDOM := &NodeDOM{
+		Document:   parser.Document,
 		NodeType:   NodeType_Root,
 		NodeName:   "ROOT",
 		Attributes: nil,

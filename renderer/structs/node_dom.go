@@ -8,6 +8,7 @@ const (
 )
 
 type NodeDOM struct {
+	Document *Document
 	//父节点
 	Parent *NodeDOM
 	//节点类型

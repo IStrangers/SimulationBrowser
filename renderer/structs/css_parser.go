@@ -167,7 +167,7 @@ func (parser *CSSParser) parseDeclaration() *CSSDeclaration {
 	if endIndex != -1 {
 		content = strings.TrimSpace(parser.CSS[0:endIndex])
 		parser.advanceBySpaces()
-		items = parser.parseDeclarationItems(content)
+		items = ParseDeclarationItems(content)
 	}
 
 	parser.advanceBy(len(content))
@@ -181,19 +181,21 @@ func (parser *CSSParser) parseDeclaration() *CSSDeclaration {
 	return declaration
 }
 
-func (parser *CSSParser) parseDeclarationItems(cssItems string) []*CSSDeclarationItem {
+func ParseDeclarationItems(cssItems string) []*CSSDeclarationItem {
 	var items []*CSSDeclarationItem
-	for _, cssItem := range strings.Split(cssItems, ";") {
-		item, err := parser.parseDeclarationItem(cssItem)
-		if err != nil {
-			continue
+	if cssItems != "" {
+		for _, cssItem := range strings.Split(cssItems, ";") {
+			item, err := ParseDeclarationItem(cssItem)
+			if err != nil {
+				continue
+			}
+			items = append(items, item)
 		}
-		items = append(items, item)
 	}
 	return items
 }
 
-func (parser *CSSParser) parseDeclarationItem(css string) (*CSSDeclarationItem, error) {
+func ParseDeclarationItem(css string) (*CSSDeclarationItem, error) {
 	kv := strings.Split(strings.TrimSpace(css), ":")
 	if len(kv) < 2 {
 		return nil, errors.New("The length after splitting is less than 2")

@@ -4,14 +4,22 @@ import (
 	"gitee.com/QQXQQ/Aix/renderer/structs"
 )
 
-func ParseHTML(html string) *structs.NodeDOM {
+func ParseHTMLDocument(html string) *structs.Document {
+	document := &structs.Document{
+		RawDocument: html,
+	}
+	document.DOM = ParseHTML(html, document)
+	return document
+}
+
+func ParseHTML(html string, document *structs.Document) *structs.NodeDOM {
 	options := &structs.HTMLParserOptions{
 		RemoveExtraSpaces: true,
 	}
-	return ParseHTMLByOptions(html, options)
+	return ParseHTMLByOptions(html, document, options)
 }
-func ParseHTMLByOptions(html string, options *structs.HTMLParserOptions) *structs.NodeDOM {
-	parser := structs.CreateHTMLParser(html, options)
+func ParseHTMLByOptions(html string, document *structs.Document, options *structs.HTMLParserOptions) *structs.NodeDOM {
+	parser := structs.CreateHTMLParser(html, document, options)
 	return parser.ParseHTML()
 }
 
