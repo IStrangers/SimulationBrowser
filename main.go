@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gitee.com/QQXQQ/Aix/renderer"
+	"renderer"
 )
 
 func main() {

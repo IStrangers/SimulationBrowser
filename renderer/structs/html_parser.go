@@ -1,7 +1,7 @@
 package structs
 
 import (
-	"gitee.com/QQXQQ/Aix/common"
+	"common"
 	"regexp"
 	"strings"
 )

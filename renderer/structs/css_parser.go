@@ -1,8 +1,8 @@
 package structs
 
 import (
+	"common"
 	"errors"
-	"gitee.com/QQXQQ/Aix/common"
 	"strings"
 )
 

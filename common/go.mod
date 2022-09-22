@@ -1,3 +1,3 @@
-module gitee.com/QQXQQ/Aix/common
+module common
 
 go 1.19
