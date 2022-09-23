@@ -11,15 +11,15 @@ type Resource struct {
 }
 
 type ResourceCache struct {
-	resources   []*Resource
-	resourceMap map[string]*Resource
+	Resources   []*Resource
+	ResourceMap map[string]*Resource
 }
 
 func (cache *ResourceCache) AddResource(resource *Resource) {
-	cache.resources = append(cache.resources, resource)
-	cache.resourceMap[resource.Key] = resource
+	cache.Resources = append(cache.Resources, resource)
+	cache.ResourceMap[resource.Key] = resource
 }
 
 func (cache *ResourceCache) GetResource(key string) *Resource {
-	return cache.resourceMap[key]
+	return cache.ResourceMap[key]
 }

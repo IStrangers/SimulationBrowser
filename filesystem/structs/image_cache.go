@@ -6,15 +6,15 @@ type Image struct {
 }
 
 type ImageCache struct {
-	images   []*Image
-	imageMap map[string]*Image
+	Images   []*Image
+	ImageMap map[string]*Image
 }
 
 func (cache *ImageCache) AddImage(image *Image) {
-	cache.images = append(cache.images, image)
-	cache.imageMap[image.Key] = image
+	cache.Images = append(cache.Images, image)
+	cache.ImageMap[image.Key] = image
 }
 
 func (cache *ImageCache) GetImage(key string) *Image {
-	return cache.imageMap[key]
+	return cache.ImageMap[key]
 }

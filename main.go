@@ -1,6 +1,7 @@
 package main
 
 import (
+	"filesystem"
 	"renderer"
 )
 
@@ -30,4 +31,7 @@ func main() {
 		}
 	`)
 	println(cssRules)
+
+	resource := filesystem.GetResource("https://www.bilibili.com/")
+	println(resource)
 }
