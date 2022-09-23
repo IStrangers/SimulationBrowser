@@ -1,4 +1,4 @@
-module gitee.com/QQXQQ/Aix/tests
+module tests
 
 go 1.19
 

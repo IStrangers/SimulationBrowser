@@ -27,6 +27,8 @@ type NodeDOM struct {
 	NeedsRepaint bool
 	//样式表
 	Style *CSSStyleSheet
+	//渲染盒子
+	RenderBox *RenderBox
 	//子节点
 	Children []*NodeDOM
 	//节点解析信息

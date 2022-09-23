@@ -169,6 +169,7 @@ func (parser *HTMLParser) parseComment(parent *NodeDOM) *NodeDOM {
 		Document:    parser.Document,
 		Parent:      parent,
 		NodeType:    NodeType_Common,
+		NodeName:    "html:comment",
 		TextContent: content,
 		Location:    parser.getSelection(startCursor, parser.getCursor()),
 	}
@@ -215,7 +216,8 @@ func (parser *HTMLParser) parseElementTag(parent *NodeDOM) *NodeDOM {
 		Attributes:    attributes,
 		NeedsReflow:   true,
 		NeedsRepaint:  true,
-		Style:         CreateCSSStyleSheetByCSSString(initialStyle),
+		Style:         CreateCSSStyleSheetByInitialStyle(tagName, initialStyle),
+		RenderBox:     &RenderBox{},
 		Location:      parser.getSelection(startCursor, parser.getCursor()),
 	}
 }
@@ -319,6 +321,7 @@ func (parser *HTMLParser) parseText(parent *NodeDOM) *NodeDOM {
 		Document:    parser.Document,
 		Parent:      parent,
 		NodeType:    NodeType_Text,
+		NodeName:    "html:text",
 		TextContent: content,
 		Location:    parser.getSelection(startCursor, parser.getCursor()),
 	}
