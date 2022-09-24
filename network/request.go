@@ -1,7 +1,7 @@
 package network
 
 import (
-	"browser"
+	browser "browser/structs"
 	"io"
 	"log"
 	"net/http"
