@@ -1,6 +1,7 @@
 package main
 
 import (
+	"browser"
 	"filesystem"
 	"renderer"
 )
@@ -34,4 +35,6 @@ func main() {
 
 	resource := filesystem.GetResource("https://www.bilibili.com/")
 	println(resource)
+
+	browser.StartWebBrowser()
 }

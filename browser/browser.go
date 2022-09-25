@@ -3,5 +3,6 @@ package browser
 import "browser/structs"
 
 func StartWebBrowser() {
-	structs.CreateWebBrowser()
+	webBrowser := structs.CreateWebBrowser()
+	webBrowser.Start()
 }

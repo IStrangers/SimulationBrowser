@@ -1,10 +1,10 @@
 package structs
 
 import (
-	renderer "renderer/structs"
-	"runtime"
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
+	renderer "renderer/structs"
+	"runtime"
 )
 
 const (
@@ -14,9 +14,9 @@ const (
 
 type WebBrowser struct {
 	CurrentDocument *renderer.Document
-	Documents []*renderer.Document
-	Window *Window
-	Settings *Settings
+	Documents       []*renderer.Document
+	Window          *Window
+	Settings        *Settings
 }
 
 func CreateWebBrowser() *WebBrowser {
@@ -25,7 +25,13 @@ func CreateWebBrowser() *WebBrowser {
 	defaultSettingsPath := "./settings.json"
 	settings := LoadSettings(defaultSettingsPath)
 
+	app := CreateApp(WebBrowserName)
+	window := CreateWindow(WebBrowserName, settings.WindowWidth, settings.WindowHeight, settings.HiDPI)
+
+	app.AddWindow(window)
+
 	webBrowser := &WebBrowser{
+		Window:   window,
 		Settings: settings,
 	}
 	return webBrowser
@@ -43,4 +49,8 @@ func setGLFWHints() {
 	glfw.WindowHint(glfw.ContextVersionMinor, 2)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
+}
+
+func (webBrowser *WebBrowser) Start() {
+	webBrowser.Window.Show()
 }

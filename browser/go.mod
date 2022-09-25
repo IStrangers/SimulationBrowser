@@ -8,7 +8,7 @@ require (
 	renderer v1.0.0
 )
 
-require common v0.0.0 // indirect
+require common v1.0.0 // indirect
 
 replace (
 	common => ../common
