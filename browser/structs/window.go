@@ -2,20 +2,54 @@ package structs
 
 import (
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"image"
 	"log"
+	renderer "renderer/structs"
+	ui "ui/structs"
 )
 
 type Window struct {
-	title       string
-	width       int
-	height      int
-	hiDPI       bool
+	title string
+
+	width  int
+	height int
+
+	hiDPI bool
+
 	needsReflow bool
 	visible     bool
-	glw         *glfw.Window
 
-	defaultCursor *glfw.Cursor
-	pointerCursor *glfw.Cursor
+	asyncFlag bool
+
+	glw         *glfw.Window
+	context     *renderer.Context
+	backend     *renderer.GLBackend
+	frameBuffer *image.RGBA
+
+	defaultCursor  *glfw.Cursor
+	pointerCursor  *glfw.Cursor
+	selectedWidget ui.Widget
+
+	registeredTrees   []*TreeWidget
+	registeredButtons []*ButtonWidget
+	registeredInputs  []*InputWidget
+	activeInput       *InputWidget
+	rootFrame         *ui.Frame
+
+	cursorX float64
+	cursorY float64
+
+	pointerPositionEventListeners []func(float64, float64)
+	scrollEventListeners          []func(int)
+	clickEventListeners           []func(MustardKey)
+
+	overlays         []*Overlay
+	hasActiveOverlay bool
+
+	staticOverlays   []*Overlay
+	hasStaticOverlay bool
+
+	contextMenu *ContextMenu
 }
 
 func CreateWindow(title string, width int, height int, hiDPI bool) *Window {
@@ -75,4 +109,14 @@ func (window *Window) destroy() {
 }
 
 func (window *Window) RecreateContext() {
+}
+
+func (window *Window) SetNeedsReflow(needsReflow bool) *Window {
+	window.needsReflow = needsReflow
+	return window
+}
+
+func (window *Window) SetRootFrame(rootFrame *ui.Frame) *Window {
+	window.rootFrame = rootFrame
+	return window
 }

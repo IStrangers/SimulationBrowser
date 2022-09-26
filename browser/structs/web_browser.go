@@ -5,6 +5,7 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	renderer "renderer/structs"
 	"runtime"
+	ui "ui/structs"
 )
 
 const (
@@ -27,7 +28,8 @@ func CreateWebBrowser() *WebBrowser {
 
 	app := CreateApp(WebBrowserName)
 	window := CreateWindow(WebBrowserName, settings.WindowWidth, settings.WindowHeight, settings.HiDPI)
-
+	rootFrame := ui.CreateFrame(ui.HorizontalFrame)
+	window.SetRootFrame(rootFrame)
 	app.AddWindow(window)
 
 	webBrowser := &WebBrowser{
