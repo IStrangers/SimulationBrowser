@@ -1,8 +1,10 @@
 package structs
 
+import "ui/structs"
+
 type App struct {
 	name    string
-	windows []*Window
+	windows []*structs.Window
 }
 
 func CreateApp(name string) *App {
@@ -11,12 +13,12 @@ func CreateApp(name string) *App {
 	}
 }
 
-func (app *App) AddWindow(window *Window) {
+func (app *App) AddWindow(window *structs.Window) {
 	app.windows = append(app.windows, window)
 }
 
-func (app *App) DestroyWindow(window *Window) {
-	var nWindows []*Window
+func (app *App) DestroyWindow(window *structs.Window) {
+	var nWindows []*structs.Window
 
 	for _, appWindow := range app.windows {
 		if appWindow != window {

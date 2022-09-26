@@ -16,7 +16,7 @@ const (
 type WebBrowser struct {
 	CurrentDocument *renderer.Document
 	Documents       []*renderer.Document
-	Window          *Window
+	Window          *ui.Window
 	Settings        *Settings
 }
 
@@ -27,7 +27,7 @@ func CreateWebBrowser() *WebBrowser {
 	settings := LoadSettings(defaultSettingsPath)
 
 	app := CreateApp(WebBrowserName)
-	window := CreateWindow(WebBrowserName, settings.WindowWidth, settings.WindowHeight, settings.HiDPI)
+	window := ui.CreateWindow(WebBrowserName, settings.WindowWidth, settings.WindowHeight, settings.HiDPI)
 	rootFrame := ui.CreateFrame(ui.HorizontalFrame)
 	window.SetRootFrame(rootFrame)
 	app.AddWindow(window)

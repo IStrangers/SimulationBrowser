@@ -5,7 +5,6 @@ import (
 	"image"
 	"log"
 	renderer "renderer/structs"
-	ui "ui/structs"
 )
 
 type Window struct {
@@ -28,20 +27,20 @@ type Window struct {
 
 	defaultCursor  *glfw.Cursor
 	pointerCursor  *glfw.Cursor
-	selectedWidget ui.Widget
+	selectedWidget Widget
 
 	registeredTrees   []*TreeWidget
 	registeredButtons []*ButtonWidget
 	registeredInputs  []*InputWidget
 	activeInput       *InputWidget
-	rootFrame         *ui.Frame
+	rootFrame         *Frame
 
 	cursorX float64
 	cursorY float64
 
 	pointerPositionEventListeners []func(float64, float64)
 	scrollEventListeners          []func(int)
-	clickEventListeners           []func(MustardKey)
+	clickEventListeners           []func(MouseKey)
 
 	overlays         []*Overlay
 	hasActiveOverlay bool
@@ -53,10 +52,12 @@ type Window struct {
 }
 
 func CreateWindow(title string, width int, height int, hiDPI bool) *Window {
+	//创建窗口
 	glw, err := glfw.CreateWindow(width, height, title, nil, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
+	//限制窗口大小
 	glw.SetSizeLimits(300, 200, glfw.DontCare, glfw.DontCare)
 
 	xScale, yScale := float32(1), float32(1)
@@ -75,40 +76,54 @@ func CreateWindow(title string, width int, height int, hiDPI bool) *Window {
 		pointerCursor: glfw.CreateStandardCursor(glfw.HandCursor),
 	}
 
+	//重新创建上下文
 	window.RecreateContext()
 	glw.MakeContextCurrent()
 
 	return window
 }
 
+/*
+显示窗口
+*/
 func (window *Window) Show() {
 	window.needsReflow = true
 	window.visible = true
 	window.glw.Show()
 }
 
+/*
+销毁窗口
+*/
 func (window *Window) destroy() {
-	//window.visible = false
+	window.visible = false
 	window.glw.Destroy()
 
 	window.glw = nil
-	//window.context = nil
-	//window.backend = nil
-	//window.frameBuffer = nil
+	window.context = nil
+	window.backend = nil
+	window.frameBuffer = nil
 
 	window.defaultCursor = nil
 	window.pointerCursor = nil
 
-	//window.registeredButtons = nil
-	//window.registeredInputs = nil
-	//window.activeInput = nil
-	//
-	//window.rootFrame = nil
+	window.registeredButtons = nil
+	window.registeredInputs = nil
+	window.activeInput = nil
+
+	window.rootFrame = nil
 
 	window = nil
 }
 
+/*
+重新创建上下文
+*/
 func (window *Window) RecreateContext() {
+}
+
+func (window *Window) GetContext() *renderer.Context {
+	return window.context
 }
 
 func (window *Window) SetNeedsReflow(needsReflow bool) *Window {
@@ -116,7 +131,7 @@ func (window *Window) SetNeedsReflow(needsReflow bool) *Window {
 	return window
 }
 
-func (window *Window) SetRootFrame(rootFrame *ui.Frame) *Window {
+func (window *Window) SetRootFrame(rootFrame *Frame) *Window {
 	window.rootFrame = rootFrame
 	return window
 }

@@ -1,8 +1,6 @@
 package structs
 
 import (
-	browser "browser/structs"
-	"image"
 	"strings"
 )
 
@@ -59,12 +57,12 @@ func (frame *Frame) draw() {
 	orientation := frame.orientation
 	top, left, width, height := frame.computedBox.GetCoords()
 	window := frame.window
-	context := window.getContext()
-	context.SetColor(frame.backgroundColor)
-	context.DrawRectangle(float64(left), float64(top), float64(width), float64(height))
+	context := window.GetContext()
+	context.SetHexColor(frame.backgroundColor)
+	context.DrawRectangle(left, top, width, height)
 	context.Fill()
 
-	CopyWidgetToBuffer(frame, context.Image())
+	CopyWidgetToBuffer(frame, context.GetImage())
 
 	widgets := frame.widgets
 	childrenLen := len(widgets)

@@ -31,3 +31,92 @@ type Context struct {
 	matrix        Matrix
 	stack         []*Context
 }
+
+func (context *Context) SetHexColor(backgroundColor string) {
+	r, g, b, a := ParseHexColor(backgroundColor)
+	context.SetRGBA255(r, g, b, a)
+}
+
+func (context *Context) DrawRectangle(x float64, y float64, w float64, h float64) {
+	context.CreateSubPath()
+	context.MoveTo(x, y)
+	context.LineTo(x+w, y)
+	context.LineTo(x+w, y+h)
+	context.LineTo(x, y+h)
+	context.ClosePath()
+}
+
+func (context *Context) Fill() {
+
+}
+
+func (context *Context) GetImage() image.Image {
+	return context.im
+}
+
+func (context *Context) SetRGBA255(r int, g int, b int, a int) {
+	context.color = color.NRGBA{R: uint8(r), G: uint8(g), B: uint8(b), A: uint8(a)}
+	context.SetFillAndStrokeColor(context.color)
+}
+
+func (context *Context) SetFillAndStrokeColor(color color.Color) {
+	context.color = color
+	context.fillPattern = CreateSolidPattern(color)
+	context.strokePattern = CreateSolidPattern(color)
+}
+
+/*
+创建绘制路径
+*/
+func (context *Context) CreateSubPath() {
+	if context.hasCurrent {
+		context.fillPath.Add1(context.start.Fixed())
+	}
+	context.hasCurrent = false
+}
+
+/*
+移动路径
+*/
+func (context *Context) MoveTo(x float64, y float64) {
+	if context.hasCurrent {
+		context.fillPath.Add1(context.start.Fixed())
+	}
+	x, y = context.TransformPoint(x, y)
+	point := Point{x, y}
+	context.strokePath.Start(point.Fixed())
+	context.fillPath.Start(point.Fixed())
+	context.start = point
+	context.current = point
+	context.hasCurrent = false
+}
+
+/*
+连接路径
+*/
+func (context *Context) LineTo(x float64, y float64) {
+	if context.hasCurrent {
+		x, y = context.TransformPoint(x, y)
+		point := Point{x, y}
+		context.strokePath.Add1(point.Fixed())
+		context.fillPath.Add1(point.Fixed())
+		context.current = point
+	} else {
+		context.MoveTo(x, y)
+	}
+}
+
+/*
+结束绘制路径
+*/
+func (context *Context) ClosePath() {
+	if context.hasCurrent {
+		context.strokePath.Add1(context.start.Fixed())
+		context.fillPath.Add1(context.start.Fixed())
+		context.current = context.start
+	}
+}
+
+func (context *Context) TransformPoint(x float64, y float64) (tx, ty float64) {
+	return context.matrix.TransformPoint(x, y)
+}

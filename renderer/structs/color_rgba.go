@@ -45,6 +45,10 @@ type ColorRGBA struct {
 	A float64
 }
 
+func (colorRGBA *ColorRGBA) GetRGBA() (float64, float64, float64, float64) {
+	return colorRGBA.R, colorRGBA.G, colorRGBA.B, colorRGBA.A
+}
+
 func ConvertColorToColorRGBA(color string) *ColorRGBA {
 	if string(color[0]) == "#" {
 		return HexStringToColorRGBA(color)
