@@ -47,7 +47,8 @@ func (context *Context) DrawRectangle(x float64, y float64, w float64, h float64
 }
 
 func (context *Context) Fill() {
-
+	context.FillPreserve()
+	context.ClearPath()
 }
 
 func (context *Context) GetImage() image.Image {
@@ -119,4 +120,39 @@ func (context *Context) ClosePath() {
 
 func (context *Context) TransformPoint(x float64, y float64) (tx, ty float64) {
 	return context.matrix.TransformPoint(x, y)
+}
+
+func (context *Context) FillPreserve() {
+	var painter raster.Painter
+	if context.mask == nil {
+		if pattern, ok := context.fillPattern.(*SolidPattern); ok {
+			p := raster.NewRGBAPainter(context.im)
+			p.SetColor(pattern.color)
+			painter = p
+		}
+	}
+	if painter == nil {
+		painter = CreatePatternPainter(context.im, context.mask, context.fillPattern)
+	}
+	context.FillByPainter(painter)
+}
+
+func (context *Context) ClearPath() {
+	context.strokePath.Clear()
+	context.fillPath.Clear()
+	context.hasCurrent = false
+}
+
+func (context *Context) FillByPainter(painter raster.Painter) {
+	path := context.fillPath
+	if context.hasCurrent {
+		path = make(raster.Path, len(context.fillPath))
+		copy(path, context.fillPath)
+		path.Add1(context.start.Fixed())
+	}
+	rasterizer := context.rasterizer
+	rasterizer.UseNonZeroWinding = context.fillRule == FillRuleWinding
+	rasterizer.Clear()
+	rasterizer.AddPath(path)
+	rasterizer.Rasterize(painter)
 }
