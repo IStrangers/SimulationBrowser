@@ -2,6 +2,7 @@ package structs
 
 import (
 	"image"
+	"image/draw"
 )
 
 type Widget interface {
@@ -15,4 +16,25 @@ type Widget interface {
 	BaseWidget() *BaseWidget
 
 	draw()
+}
+
+func CopyWidgetToBuffer(widget Widget, src image.Image) {
+	computedBox := widget.ComputedBox()
+	top, left, width, height := int(computedBox.top), int(computedBox.left), int(computedBox.width), int(computedBox.height)
+
+	buffer := widget.Buffer()
+	if buffer == nil || buffer.Bounds().Max.X != width && buffer.Bounds().Max.Y != height {
+		widget.BaseWidget().SetBuffer(image.NewRGBA(image.Rectangle{
+			Min: image.Point{},
+			Max: image.Point{
+				X: width,
+				Y: height,
+			},
+		}))
+	}
+
+	draw.Draw(widget.BaseWidget().buffer, image.Rectangle{
+		Min: image.Point{},
+		Max: image.Point{X: width, Y: height},
+	}, src, image.Point{X: left, Y: top}, draw.Over)
 }

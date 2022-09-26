@@ -4,7 +4,6 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/goki/freetype/truetype"
 	"image"
-	"image/draw"
 )
 
 type BaseWidget struct {
@@ -41,27 +40,6 @@ func GetCoreWidgets(widgets []Widget) []*BaseWidget {
 		coreWidgets = append(coreWidgets, widget.BaseWidget())
 	}
 	return coreWidgets
-}
-
-func CopyWidgetToBuffer(widget Widget, src image.Image) {
-	computedBox := widget.ComputedBox()
-	top, left, width, height := int(computedBox.top), int(computedBox.left), int(computedBox.width), int(computedBox.height)
-
-	buffer := widget.Buffer()
-	if buffer == nil || buffer.Bounds().Max.X != width && buffer.Bounds().Max.Y != height {
-		widget.BaseWidget().SetBuffer(image.NewRGBA(image.Rectangle{
-			Min: image.Point{},
-			Max: image.Point{
-				X: width,
-				Y: height,
-			},
-		}))
-	}
-
-	draw.Draw(widget.BaseWidget().buffer, image.Rectangle{
-		Min: image.Point{},
-		Max: image.Point{X: width, Y: height},
-	}, src, image.Point{X: left, Y: top}, draw.Over)
 }
 
 func CalculateChildrenWidgetsLayout(children []*BaseWidget, top, left, width, height float64, orientation FrameOrientation) []*BaseWidget {
