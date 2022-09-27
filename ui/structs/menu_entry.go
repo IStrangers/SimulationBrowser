@@ -10,3 +10,10 @@ type MenuEntry struct {
 	width  float64
 	height float64
 }
+
+func CreateMenuEntry(entryText string, action func()) *MenuEntry {
+	return &MenuEntry{
+		entryText: entryText,
+		action: action,
+	}
+}
