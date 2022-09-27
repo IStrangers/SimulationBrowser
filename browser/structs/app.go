@@ -27,5 +27,5 @@ func (app *App) DestroyWindow(window *structs.Window) {
 	}
 
 	app.windows = nWindows
-	window.destroy()
+	window.Destroy()
 }

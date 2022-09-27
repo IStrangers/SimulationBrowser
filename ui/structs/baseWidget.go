@@ -37,7 +37,7 @@ type BaseWidget struct {
 func GetCoreWidgets(widgets []Widget) []*BaseWidget {
 	var coreWidgets []*BaseWidget
 	for _, widget := range widgets {
-		coreWidgets = append(coreWidgets, widget.BaseWidget())
+		coreWidgets = append(coreWidgets, widget.GetBaseWidget())
 	}
 	return coreWidgets
 }
@@ -163,7 +163,7 @@ func (widget *BaseWidget) ComputedBox() *Box {
 	return &widget.computedBox
 }
 
-func (widget *BaseWidget) BaseWidget() *BaseWidget {
+func (widget *BaseWidget) GetBaseWidget() *BaseWidget {
 	return widget
 }
 

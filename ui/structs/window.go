@@ -95,7 +95,7 @@ func (window *Window) Show() {
 /*
 销毁窗口
 */
-func (window *Window) destroy() {
+func (window *Window) Destroy() {
 	window.visible = false
 	window.glw.Destroy()
 

@@ -13,7 +13,7 @@ type Widget interface {
 	Widgets() []Widget
 	ComputedBox() *Box
 	SetWindow(window *Window)
-	BaseWidget() *BaseWidget
+	GetBaseWidget() *BaseWidget
 
 	draw()
 }
@@ -24,7 +24,7 @@ func CopyWidgetToBuffer(widget Widget, src image.Image) {
 
 	buffer := widget.Buffer()
 	if buffer == nil || buffer.Bounds().Max.X != width && buffer.Bounds().Max.Y != height {
-		widget.BaseWidget().SetBuffer(image.NewRGBA(image.Rectangle{
+		widget.GetBaseWidget().SetBuffer(image.NewRGBA(image.Rectangle{
 			Min: image.Point{},
 			Max: image.Point{
 				X: width,
@@ -33,7 +33,7 @@ func CopyWidgetToBuffer(widget Widget, src image.Image) {
 		}))
 	}
 
-	draw.Draw(widget.BaseWidget().buffer, image.Rectangle{
+	draw.Draw(widget.GetBaseWidget().buffer, image.Rectangle{
 		Min: image.Point{},
 		Max: image.Point{X: width, Y: height},
 	}, src, image.Point{X: left, Y: top}, draw.Over)
