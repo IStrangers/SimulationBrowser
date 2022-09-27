@@ -49,9 +49,13 @@ type Window struct {
 	hasStaticOverlay bool
 
 	contextMenu *ContextMenu
+
+	history *History
 }
 
 func CreateWindow(title string, width int, height int, hiDPI bool) *Window {
+	glfw.Init()
+	setGLFWHints()
 	//创建窗口
 	glw, err := glfw.CreateWindow(width, height, title, nil, nil)
 	if err != nil {
@@ -74,6 +78,8 @@ func CreateWindow(title string, width int, height int, hiDPI bool) *Window {
 
 		defaultCursor: glfw.CreateStandardCursor(glfw.ArrowCursor),
 		pointerCursor: glfw.CreateStandardCursor(glfw.HandCursor),
+
+		history: CreateHistory(),
 	}
 
 	//重新创建上下文
@@ -81,6 +87,13 @@ func CreateWindow(title string, width int, height int, hiDPI bool) *Window {
 	glw.MakeContextCurrent()
 
 	return window
+}
+
+func setGLFWHints() {
+	glfw.WindowHint(glfw.ContextVersionMajor, 3)
+	glfw.WindowHint(glfw.ContextVersionMinor, 2)
+	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
+	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 }
 
 /*
@@ -120,6 +133,7 @@ func (window *Window) Destroy() {
 重新创建上下文
 */
 func (window *Window) RecreateContext() {
+	window.context = renderer.CreateContext(window.width,window.height)
 }
 
 func (window *Window) GetContext() *renderer.Context {

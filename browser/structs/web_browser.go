@@ -1,8 +1,6 @@
 package structs
 
 import (
-	"github.com/go-gl/gl/v4.6-core/gl"
-	"github.com/go-gl/glfw/v3.3/glfw"
 	profiler "profiler/structs"
 	renderer "renderer/structs"
 	"runtime"
@@ -23,7 +21,7 @@ type WebBrowser struct {
 }
 
 func CreateWebBrowser() *WebBrowser {
-	beforeInit()
+	runtime.LockOSThread()
 
 	defaultSettingsPath := "./settings.json"
 	settings := LoadSettings(defaultSettingsPath)
@@ -40,20 +38,6 @@ func CreateWebBrowser() *WebBrowser {
 		Settings: settings,
 	}
 	return webBrowser
-}
-
-func beforeInit() {
-	runtime.LockOSThread()
-	glfw.Init()
-	gl.Init()
-	setGLFWHints()
-}
-
-func setGLFWHints() {
-	glfw.WindowHint(glfw.ContextVersionMajor, 3)
-	glfw.WindowHint(glfw.ContextVersionMinor, 2)
-	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
-	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 }
 
 func (webBrowser *WebBrowser) Start() {

@@ -3,8 +3,14 @@ package structs
 import (
 	"github.com/goki/freetype/raster"
 	"golang.org/x/image/font"
+	"golang.org/x/image/font/basicfont"
 	"image"
 	"image/color"
+)
+
+var (
+	defaultFillStyle   = CreateSolidPattern(color.White)
+	defaultStrokeStyle = CreateSolidPattern(color.Black)
 )
 
 type Context struct {
@@ -23,6 +29,7 @@ type Context struct {
 	hasCurrent    bool
 	dashes        []float64
 	dashOffset    float64
+	lineWidth     float64
 	lineCap       LineCap
 	lineJoin      LineJoin
 	fillRule      FillRule
@@ -30,6 +37,33 @@ type Context struct {
 	fontHeight    float64
 	matrix        Matrix
 	stack         []*Context
+}
+
+func CreateContext(width, height int) *Context {
+	return CreateContextByRGBA(image.NewRGBA(image.Rect(0, 0, width, height)))
+}
+
+func CreateContextByImage(im image.Image) *Context {
+	return CreateContextByRGBA(ImageToRGBA(im))
+}
+
+func CreateContextByRGBA(im *image.RGBA) *Context {
+	w := im.Bounds().Size().X
+	h := im.Bounds().Size().Y
+	return &Context{
+		width:         w,
+		height:        h,
+		rasterizer:    raster.NewRasterizer(w, h),
+		im:            im,
+		color:         color.Transparent,
+		fillPattern:   defaultFillStyle,
+		strokePattern: defaultStrokeStyle,
+		lineWidth:     1,
+		fillRule:      FillRuleWinding,
+		fontFace:      basicfont.Face7x13,
+		fontHeight:    13,
+		matrix:        Identity(),
+	}
 }
 
 func (context *Context) SetHexColor(backgroundColor string) {
