@@ -23,6 +23,7 @@ replace (
 	common => ./common
 	filesystem => ./filesystem
 	network => ./network
+	profiler => ./profiler
 	renderer => ./renderer
 	ui => ./ui
 )

@@ -3,6 +3,7 @@ package structs
 import (
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
+	profiler "profiler/structs"
 	renderer "renderer/structs"
 	"runtime"
 	ui "ui/structs"
@@ -17,6 +18,7 @@ type WebBrowser struct {
 	CurrentDocument *renderer.Document
 	Documents       []*renderer.Document
 	Window          *ui.Window
+	Profiler        *profiler.Profiler
 	Settings        *Settings
 }
 
@@ -34,6 +36,7 @@ func CreateWebBrowser() *WebBrowser {
 
 	webBrowser := &WebBrowser{
 		Window:   window,
+		Profiler: profiler.CreateProfiler(),
 		Settings: settings,
 	}
 	return webBrowser
