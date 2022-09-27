@@ -1,33 +1,33 @@
 package renderer
 
 import (
-	"renderer/structs"
+	renderer_structs "renderer/structs"
 )
 
-func ParseHTMLDocument(html string) *structs.Document {
-	document := &structs.Document{
+func ParseHTMLDocument(html string) *renderer_structs.Document {
+	document := &renderer_structs.Document{
 		RawDocument: html,
 	}
 	document.DOM = ParseHTML(html, document)
 	return document
 }
 
-func ParseHTML(html string, document *structs.Document) *structs.NodeDOM {
-	options := &structs.HTMLParserOptions{
+func ParseHTML(html string, document *renderer_structs.Document) *renderer_structs.NodeDOM {
+	options := &renderer_structs.HTMLParserOptions{
 		RemoveExtraSpaces: true,
 	}
 	return ParseHTMLByOptions(html, document, options)
 }
-func ParseHTMLByOptions(html string, document *structs.Document, options *structs.HTMLParserOptions) *structs.NodeDOM {
-	parser := structs.CreateHTMLParser(html, document, options)
+func ParseHTMLByOptions(html string, document *renderer_structs.Document, options *renderer_structs.HTMLParserOptions) *renderer_structs.NodeDOM {
+	parser := renderer_structs.CreateHTMLParser(html, document, options)
 	return parser.ParseHTML()
 }
 
-func ParseCSS(css string) []*structs.CSSRule {
-	options := &structs.CSSParserOptions{}
+func ParseCSS(css string) []*renderer_structs.CSSRule {
+	options := &renderer_structs.CSSParserOptions{}
 	return ParseCSSByOptions(css, options)
 }
-func ParseCSSByOptions(css string, options *structs.CSSParserOptions) []*structs.CSSRule {
-	parser := structs.CreateCSSParser(css, options)
+func ParseCSSByOptions(css string, options *renderer_structs.CSSParserOptions) []*renderer_structs.CSSRule {
+	parser := renderer_structs.CreateCSSParser(css, options)
 	return parser.ParseCSS()
 }

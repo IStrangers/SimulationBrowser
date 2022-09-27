@@ -188,3 +188,13 @@ func (widget *BaseWidget) SetWindow(window *Window) {
 func (widget *BaseWidget) SetBuffer(buffer *image.RGBA) {
 	widget.buffer = buffer
 }
+
+
+func (widget *BaseWidget) AddWidget(wd Widget) {
+	wd.SetWindow(widget.window)
+	widget.widgets = append(widget.widgets,wd)
+
+	if widget.widgets != nil && widget.window.rootFrame != nil {
+		widget.window.rootFrame.RequestReflow()
+	}
+}

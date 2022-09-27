@@ -3,6 +3,7 @@ module network
 go 1.19
 
 replace (
+	assets => ../assets
 	browser => ../browser
 	common => ../common
 	filesystem => ../filesystem

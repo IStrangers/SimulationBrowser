@@ -3,6 +3,7 @@ module ui
 go 1.19
 
 replace (
+	assets => ../assets
 	browser => ../browser
 	common => ../common
 	filesystem => ../filesystem
@@ -20,6 +21,7 @@ require (
 )
 
 require (
+	assets v1.0.0
 	common v0.0.0-00010101000000-000000000000 // indirect
 	github.com/go-gl/gl v0.0.0-20211210172815-726fda9656d6 // indirect
 	golang.org/x/image v0.0.0-20220902085622-e7cb96979f69 // indirect

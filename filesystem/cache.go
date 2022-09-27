@@ -1,43 +1,43 @@
 package filesystem
 
 import (
-	browser "browser/structs"
+	browser_structs "browser/structs"
 	"common"
 	"encoding/base64"
-	filesystem "filesystem/structs"
+	filesystem_structs "filesystem/structs"
 	"fmt"
 	"net/url"
 	"network"
 	"strings"
 )
 
-var resourceCache = &filesystem.ResourceCache{
-	ResourceMap: make(map[string]*filesystem.Resource, 99),
+var resourceCache = &filesystem_structs.ResourceCache{
+	ResourceMap: make(map[string]*filesystem_structs.Resource, 99),
 }
-var imageCache = &filesystem.ImageCache{
-	ImageMap: make(map[string]*filesystem.Image, 99),
+var imageCache = &filesystem_structs.ImageCache{
+	ImageMap: make(map[string]*filesystem_structs.Image, 99),
 }
 
 func ParseURL(u string) *url.URL {
 	URL, err := url.Parse(u)
 	if err != nil {
-		URL = ParseURL(browser.WebBrowserName + "://error?err=failedToParseURL")
+		URL = ParseURL(browser_structs.WebBrowserName + "://error?err=failedToParseURL")
 	}
 	return URL
 }
 
-func AddResource(resource *filesystem.Resource) {
+func AddResource(resource *filesystem_structs.Resource) {
 	resourceCache.AddResource(resource)
 }
 
-func GetResource(url string) *filesystem.Resource {
+func GetResource(url string) *filesystem_structs.Resource {
 	URL := ParseURL(url)
 	return GetResourceByURL(URL)
 }
 
-func GetResourceByURL(URL *url.URL) *filesystem.Resource {
+func GetResourceByURL(URL *url.URL) *filesystem_structs.Resource {
 	switch URL.Scheme {
-	case browser.WebBrowserName:
+	case browser_structs.WebBrowserName:
 		return getInternalPage(URL)
 	case "file":
 		return getLocalPage(URL)
@@ -47,23 +47,23 @@ func GetResourceByURL(URL *url.URL) *filesystem.Resource {
 	return GetExternalPage(URL)
 }
 
-func getInternalPage(URL *url.URL) *filesystem.Resource {
-	resource := &filesystem.Resource{}
+func getInternalPage(URL *url.URL) *filesystem_structs.Resource {
+	resource := &filesystem_structs.Resource{}
 	return resource
 }
 
-func getLocalPage(URL *url.URL) *filesystem.Resource {
-	resource := &filesystem.Resource{}
+func getLocalPage(URL *url.URL) *filesystem_structs.Resource {
+	resource := &filesystem_structs.Resource{}
 	return resource
 }
 
-func GetExternalPage(URL *url.URL) *filesystem.Resource {
+func GetExternalPage(URL *url.URL) *filesystem_structs.Resource {
 	url := URL.String()
 	cache := resourceCache.GetResource(url)
 	if cache != nil {
 		return cache
 	}
-	resource := &filesystem.Resource{
+	resource := &filesystem_structs.Resource{
 		Key: url,
 		URL: URL,
 	}
@@ -79,17 +79,17 @@ func GetExternalPage(URL *url.URL) *filesystem.Resource {
 	return resource
 }
 
-func AddImage(image *filesystem.Image) {
+func AddImage(image *filesystem_structs.Image) {
 	imageCache.AddImage(image)
 }
 
-func GetImage(URL *url.URL) (*filesystem.Image, error) {
+func GetImage(URL *url.URL) (*filesystem_structs.Image, error) {
 	url := URL.String()
 	cache := imageCache.GetImage(url)
 	if cache != nil {
 		return cache, nil
 	}
-	image := &filesystem.Image{
+	image := &filesystem_structs.Image{
 		Key: url,
 	}
 	if len(url) >= 22 && common.IsBase64Image(url) {

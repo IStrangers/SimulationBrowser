@@ -6,6 +6,7 @@ import (
 	"golang.org/x/image/font/basicfont"
 	"image"
 	"image/color"
+	"image/draw"
 )
 
 var (
@@ -189,4 +190,9 @@ func (context *Context) FillByPainter(painter raster.Painter) {
 	rasterizer.Clear()
 	rasterizer.AddPath(path)
 	rasterizer.Rasterize(painter)
+}
+
+func (context *Context) DrawImage(src image.Image, x int, y int) {
+	dest, _ := context.GetImage().(draw.Image)
+	draw.Draw(dest, src.Bounds().Add(image.Pt(x, y)), src, image.Point{}, draw.Over)
 }

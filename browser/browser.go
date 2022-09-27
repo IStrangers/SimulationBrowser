@@ -1,8 +1,8 @@
 package browser
 
-import browser "browser/structs"
+import browser_structs "browser/structs"
 
 func StartWebBrowser() {
-	webBrowser := browser.CreateWebBrowser()
+	webBrowser := browser_structs.CreateWebBrowser()
 	webBrowser.Start()
 }

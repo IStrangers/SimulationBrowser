@@ -1,28 +1,28 @@
 package network
 
 import (
-	browser "browser/structs"
+	browser_structs "browser/structs"
 	"io"
 	"log"
 	"net/http"
-	network "network/structs"
+	network_structs "network/structs"
 	"strings"
 )
 
 var httpClient = &http.Client{}
 var defaultHeaders = map[string]string{
-	"User-Agent": browser.WebBrowserName + "/" + browser.WebBrowserVersion,
+	"User-Agent": browser_structs.WebBrowserName + "/" + browser_structs.WebBrowserVersion,
 }
 
-func SendGetRequest(url string) (*network.RequestResult, error) {
+func SendGetRequest(url string) (*network_structs.RequestResult, error) {
 	return SendRequest("GET", url, nil)
 }
 
-func SendPostRequest(url string, body string) (*network.RequestResult, error) {
+func SendPostRequest(url string, body string) (*network_structs.RequestResult, error) {
 	return SendRequest("POST", url, strings.NewReader(body))
 }
 
-func SendRequest(method string, url string, body io.Reader) (*network.RequestResult, error) {
+func SendRequest(method string, url string, body io.Reader) (*network_structs.RequestResult, error) {
 	request, err := http.NewRequest(method, url, body)
 	if err != nil {
 		log.Fatalln(err)
@@ -34,7 +34,7 @@ func SendRequest(method string, url string, body io.Reader) (*network.RequestRes
 	}
 	defer response.Body.Close()
 	res, err := io.ReadAll(response.Body)
-	requestResult := &network.RequestResult{
+	requestResult := &network_structs.RequestResult{
 		Body:        res,
 		ContentType: response.Header.Get("Content-Type"),
 		StatusCode:  response.StatusCode,

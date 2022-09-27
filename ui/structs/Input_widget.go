@@ -1,6 +1,6 @@
 package structs
 
-import renderer "renderer/structs"
+import renderer_structs "renderer/structs"
 
 type InputWidget struct {
 	BaseWidget
@@ -10,7 +10,7 @@ type InputWidget struct {
 	active          bool
 	padding         float64
 	fontSize        float64
-	context         *renderer.Context
+	context         *renderer_structs.Context
 	fontColor       string
 	cursorFloat     bool
 	cursorPosition  int

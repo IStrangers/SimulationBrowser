@@ -1,10 +1,11 @@
 package structs
 
 import (
-	profiler "profiler/structs"
-	renderer "renderer/structs"
+	profiler_structs "profiler/structs"
+	renderer_structs "renderer/structs"
 	"runtime"
-	ui "ui/structs"
+	"ui"
+	ui_structs "ui/structs"
 )
 
 const (
@@ -13,10 +14,10 @@ const (
 )
 
 type WebBrowser struct {
-	CurrentDocument *renderer.Document
-	Documents       []*renderer.Document
-	Window          *ui.Window
-	Profiler        *profiler.Profiler
+	CurrentDocument *renderer_structs.Document
+	Documents       []*renderer_structs.Document
+	Window          *ui_structs.Window
+	Profiler        *profiler_structs.Profiler
 	Settings        *Settings
 }
 
@@ -27,14 +28,23 @@ func CreateWebBrowser() *WebBrowser {
 	settings := LoadSettings(defaultSettingsPath)
 
 	app := CreateApp(WebBrowserName)
-	window := ui.CreateWindow(WebBrowserName, settings.WindowWidth, settings.WindowHeight, settings.HiDPI)
-	rootFrame := ui.CreateFrame(ui.HorizontalFrame)
+	window := ui_structs.CreateWindow(WebBrowserName, settings.WindowWidth, settings.WindowHeight, settings.HiDPI)
+	rootFrame := ui_structs.CreateFrame(ui_structs.HorizontalFrame)
+
+	viewPort := ui_structs.CreateCanvasWidget(ui.ViewPortRenderer)
+	scrollBar := ui_structs.CreateScrollBarWidget(ui_structs.VerticalScrollBar)
+
+	viewArea := ui_structs.CreateFrame(ui_structs.VerticalFrame)
+	viewArea.AddWidget(viewPort)
+	viewArea.AddWidget(scrollBar)
+
+	rootFrame.AddWidget(viewArea)
 	window.SetRootFrame(rootFrame)
 	app.AddWindow(window)
 
 	webBrowser := &WebBrowser{
 		Window:   window,
-		Profiler: profiler.CreateProfiler(),
+		Profiler: profiler_structs.CreateProfiler(),
 		Settings: settings,
 	}
 	return webBrowser

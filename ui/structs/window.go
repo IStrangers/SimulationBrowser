@@ -4,7 +4,7 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"image"
 	"log"
-	renderer "renderer/structs"
+	renderer_structs "renderer/structs"
 )
 
 type Window struct {
@@ -21,8 +21,8 @@ type Window struct {
 	asyncFlag bool
 
 	glw         *glfw.Window
-	context     *renderer.Context
-	backend     *renderer.GLBackend
+	context     *renderer_structs.Context
+	backend     *renderer_structs.GLBackend
 	frameBuffer *image.RGBA
 
 	defaultCursor  *glfw.Cursor
@@ -135,10 +135,10 @@ func (window *Window) Destroy() {
 重新创建上下文
 */
 func (window *Window) RecreateContext() {
-	window.context = renderer.CreateContext(window.width,window.height)
+	window.context = renderer_structs.CreateContext(window.width,window.height)
 }
 
-func (window *Window) GetContext() *renderer.Context {
+func (window *Window) GetContext() *renderer_structs.Context {
 	return window.context
 }
 
