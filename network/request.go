@@ -5,7 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"network/structs"
+	network "network/structs"
 	"strings"
 )
 
@@ -14,15 +14,15 @@ var defaultHeaders = map[string]string{
 	"User-Agent": browser.WebBrowserName + "/" + browser.WebBrowserVersion,
 }
 
-func SendGetRequest(url string) (*structs.RequestResult, error) {
+func SendGetRequest(url string) (*network.RequestResult, error) {
 	return SendRequest("GET", url, nil)
 }
 
-func SendPostRequest(url string, body string) (*structs.RequestResult, error) {
+func SendPostRequest(url string, body string) (*network.RequestResult, error) {
 	return SendRequest("POST", url, strings.NewReader(body))
 }
 
-func SendRequest(method string, url string, body io.Reader) (*structs.RequestResult, error) {
+func SendRequest(method string, url string, body io.Reader) (*network.RequestResult, error) {
 	request, err := http.NewRequest(method, url, body)
 	if err != nil {
 		log.Fatalln(err)
@@ -34,7 +34,7 @@ func SendRequest(method string, url string, body io.Reader) (*structs.RequestRes
 	}
 	defer response.Body.Close()
 	res, err := io.ReadAll(response.Body)
-	requestResult := &structs.RequestResult{
+	requestResult := &network.RequestResult{
 		Body:        res,
 		ContentType: response.Header.Get("Content-Type"),
 		StatusCode:  response.StatusCode,

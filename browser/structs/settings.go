@@ -10,7 +10,7 @@ import (
 type Settings struct {
 	HomePage string
 
-	WindowWidth int
+	WindowWidth  int
 	WindowHeight int
 
 	HiDPI bool
@@ -28,7 +28,7 @@ var defaultSettings = Settings{
 func LoadSettings(path string) *Settings {
 	settingsPath := flag.String("settings", path, "This flag sets the location for the browser settings file.")
 	flag.Parse()
-	settingsData,err := os.ReadFile(*settingsPath)
+	settingsData, err := os.ReadFile(*settingsPath)
 
 	if err != nil {
 		fmt.Println("Unable to read settings file", settingsPath)
