@@ -3,7 +3,8 @@ module browser
 go 1.19
 
 require (
-	renderer v0.0.0-00010101000000-000000000000
+	layout v0.0.0-00010101000000-000000000000
+	renderer v1.0.0
 	ui v0.0.0-00010101000000-000000000000
 )
 
@@ -24,6 +25,7 @@ replace (
 	browser => ../browser
 	common => ../common
 	filesystem => ../filesystem
+	layout => ../layout
 	network => ../network
 	profiler => ../profiler
 	renderer => ../renderer
