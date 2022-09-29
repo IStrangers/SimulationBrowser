@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"image"
 	"image/draw"
+	_ "image/gif"
 	"image/jpeg"
 	_ "image/jpeg"
 	"image/png"

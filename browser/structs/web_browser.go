@@ -45,11 +45,11 @@ func CreateWebBrowser() *WebBrowser {
 
 	app := webBrowser.App
 	app.AddWindow(window)
-	app.Run(func() {})
 
 	return webBrowser
 }
 
 func (webBrowser *WebBrowser) Start() {
 	webBrowser.Window.Show()
+	webBrowser.App.Run(func() {})
 }
