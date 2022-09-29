@@ -1,7 +1,9 @@
 package structs
 
 import (
+	"assets"
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/goki/freetype/truetype"
 	"image"
 	"log"
 	renderer_structs "renderer/structs"
@@ -49,8 +51,6 @@ type Window struct {
 	hasStaticOverlay bool
 
 	contextMenu *ContextMenu
-
-	history *History
 }
 
 func CreateWindow(title string, width int, height int, hiDPI bool) *Window {
@@ -78,8 +78,6 @@ func CreateWindow(title string, width int, height int, hiDPI bool) *Window {
 
 		defaultCursor: glfw.CreateStandardCursor(glfw.ArrowCursor),
 		pointerCursor: glfw.CreateStandardCursor(glfw.HandCursor),
-
-		history: CreateHistory(),
 	}
 
 	//开启菜单
@@ -178,6 +176,45 @@ func (window *Window) RemoveOverlay(overlay *Overlay) {
 	}
 }
 
+func (window *Window) AddStaticOverlay(overlay *Overlay) {
+	window.staticOverlays = append(
+		window.staticOverlays,
+		overlay,
+	)
+
+	window.hasStaticOverlay = true
+}
+
+func (window *Window) RemoveStaticOverlay(ref string) {
+	for idx, cOverlay := range window.staticOverlays {
+		if cOverlay.ref == ref {
+			window.staticOverlays = append(window.staticOverlays[:idx], window.staticOverlays[idx+1:]...)
+		}
+	}
+
+	if len(window.staticOverlays) < 1 {
+		window.hasStaticOverlay = false
+	}
+}
+
+func CreateStaticOverlay(ref string, ctx *renderer_structs.Context, position image.Point) *Overlay {
+	buffer := ctx.GetImage().(*image.RGBA)
+
+	return &Overlay{
+		ref:    ref,
+		active: true,
+
+		top:  float64(position.Y),
+		left: float64(position.X),
+
+		width:  float64(buffer.Rect.Max.X),
+		height: float64(buffer.Rect.Max.Y),
+
+		position: position,
+		buffer:   buffer,
+	}
+}
+
 func (window *Window) EnableContextMenus() {
 	window.contextMenu = CreateContextMenu()
 }
@@ -194,6 +231,72 @@ func (window *Window) DestroyContextMenu() {
 
 func (window *Window) RegisterInput(input *InputWidget) {
 	window.registeredInputs = append(window.registeredInputs, input)
+}
+
+func (window *Window) RegisterTree(tree *TreeWidget) {
+	window.registeredTrees = append(window.registeredTrees, tree)
+}
+
+func (window *Window) RegisterButton(button *ButtonWidget, callback func()) {
+	button.onClick = callback
+	window.registeredButtons = append(window.registeredButtons, button)
+}
+
+func (window *Window) GetCursorPosition() (float64, float64) {
+	return window.cursorX, window.cursorY
+}
+
+func (window *Window) SetContextMenuOverlay(overlay *Overlay) {
+	window.contextMenu.overlay = overlay
+	window.AddOverlay(overlay)
+}
+
+func (window *Window) DrawContextMenu() {
+	menuWidth := float64(200)
+	menuHeight := float64(len(window.contextMenu.entries) * 20)
+
+	menuTop := window.cursorY
+	menuLeft := window.cursorX
+
+	if menuLeft+menuWidth > float64(window.width) {
+		menuLeft = float64(window.width) - menuWidth
+	}
+
+	if menuTop+menuHeight > float64(window.height) {
+		menuTop = float64(window.height) - menuHeight
+	}
+
+	ctx := renderer_structs.CreateContext(int(menuWidth), int(menuHeight))
+	ctx.DrawRectangle(0, 0, menuWidth, menuHeight)
+	ctx.SetHexColor("#eee")
+	ctx.Fill()
+
+	font, _ := truetype.Parse(assets.OpenSans(400))
+	ctx.SetHexColor("#222")
+	ctx.SetFont(font, 16)
+
+	textLeft := 4.
+
+	for idx, entry := range window.contextMenu.entries {
+		top, left := 16+float64(idx*20), 0.
+
+		entry.setCoords(menuTop+top-16, menuLeft+left, menuWidth, 20)
+		ctx.DrawString(prepEntry(ctx, entry.entryText, menuWidth-textLeft), textLeft, top)
+		ctx.Fill()
+	}
+
+	ctx.DrawRectangle(0, 0, menuWidth, menuHeight)
+	ctx.SetHexColor("#ddd")
+	ctx.Stroke()
+
+	overlay := extractOverlay(
+		ctx.GetImage().(*image.RGBA),
+		image.Point{
+			X: int(menuLeft),
+			Y: int(menuTop),
+		})
+
+	window.SetContextMenuOverlay(overlay)
 }
 
 func (window *Window) IsVisible() bool {

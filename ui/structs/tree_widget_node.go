@@ -12,6 +12,14 @@ type TreeWidgetNode struct {
 	box        Box
 }
 
+func CreateTreeWidgetNode(key, value string) *TreeWidgetNode {
+	return &TreeWidgetNode{
+		Key:   key,
+		Value: value,
+		box:   Box{},
+	}
+}
+
 func (node *TreeWidgetNode) Toggle() {
 	if node.isOpen {
 		node.isOpen = false

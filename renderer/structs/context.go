@@ -336,3 +336,39 @@ func (context *Context) Stroke() {
 	context.StrokePreserve()
 	context.ClearPath()
 }
+
+func (context *Context) Push() {
+	x := *context
+	context.stack = append(context.stack, &x)
+}
+
+func (context *Context) Rotate(angle float64) {
+	context.matrix = context.matrix.Rotate(angle)
+}
+
+func (context *Context) Pop() {
+	before := *context
+	s := context.stack
+	x, s := s[len(s)-1], s[:len(s)-1]
+	*context = *x
+	context.mask = before.mask
+	context.strokePath = before.strokePath
+	context.fillPath = before.fillPath
+	context.start = before.start
+	context.current = before.current
+	context.hasCurrent = before.hasCurrent
+}
+
+func (context *Context) SetRGBA(r, g, b, a float64) {
+	context.color = color.NRGBA{
+		R: uint8(r * 255),
+		G: uint8(g * 255),
+		B: uint8(b * 255),
+		A: uint8(a * 255),
+	}
+	context.SetFillAndStrokeColor(context.color)
+}
+
+func (context *Context) SetRGB(r, g, b float64) {
+	context.SetRGBA(r, g, b, 1)
+}

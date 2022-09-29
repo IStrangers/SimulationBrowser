@@ -177,6 +177,30 @@ func (widget *BaseWidget) SetNeedsRepaint(needsRepaint bool) {
 	widget.needsRepaint = needsRepaint
 }
 
+func (widget *BaseWidget) RequestRepaint() {
+	widget.needsRepaint = true
+}
+
+func (widget *BaseWidget) GetRect() (float64, float64, float64, float64) {
+	return widget.computedBox.GetCoords()
+}
+
+func (widget *BaseWidget) GetTop() float64 {
+	return widget.computedBox.top
+}
+
+func (widget *BaseWidget) GetLeft() float64 {
+	return widget.computedBox.left
+}
+
+func (widget *BaseWidget) GetWidth() float64 {
+	return widget.computedBox.width
+}
+
+func (widget *BaseWidget) GetHeight() float64 {
+	return widget.computedBox.height
+}
+
 func (widget *BaseWidget) SetWindow(window *Window) {
 	widget.window = window
 
@@ -189,10 +213,9 @@ func (widget *BaseWidget) SetBuffer(buffer *image.RGBA) {
 	widget.buffer = buffer
 }
 
-
 func (widget *BaseWidget) AddWidget(wd Widget) {
 	wd.SetWindow(widget.window)
-	widget.widgets = append(widget.widgets,wd)
+	widget.widgets = append(widget.widgets, wd)
 
 	if widget.widgets != nil && widget.window.rootFrame != nil {
 		widget.window.rootFrame.RequestReflow()

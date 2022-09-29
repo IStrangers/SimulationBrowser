@@ -15,9 +15,11 @@ const (
 type WebBrowser struct {
 	CurrentDocument *renderer_structs.Document
 	Documents       []*renderer_structs.Document
-
-	UI       *WebBrowserUI
 	Window   *ui_structs.Window
+
+	App *App
+	UI       *WebBrowserUI
+	History  *History
 	Profiler *profiler_structs.Profiler
 	Settings *Settings
 }
@@ -29,6 +31,8 @@ func CreateWebBrowser() *WebBrowser {
 	settings := LoadSettings(defaultSettingsPath)
 
 	webBrowser := &WebBrowser{
+		App: CreateApp(WebBrowserName),
+		History:  CreateHistory(),
 		Settings: settings,
 		Profiler: profiler_structs.CreateProfiler(),
 	}
@@ -37,7 +41,7 @@ func CreateWebBrowser() *WebBrowser {
 	webBrowser.Window = window
 	webBrowser.UI = CreateWebBrowserUI(webBrowser)
 
-	app := CreateApp(WebBrowserName)
+	app := webBrowser.App
 	app.AddWindow(window)
 	app.Run(func() {})
 

@@ -11,6 +11,7 @@ type HeadBar struct {
 	ToolsButton    *ui_structs.ButtonWidget
 	NextButton     *ui_structs.ButtonWidget
 	PreviousButton *ui_structs.ButtonWidget
+	ReloadButton   *ui_structs.ButtonWidget
 	UrlInput       *ui_structs.InputWidget
 }
 
@@ -88,6 +89,7 @@ func CreateHeadBar() *HeadBar {
 		ToolsButton:    toolsButton,
 		NextButton:     nextButton,
 		PreviousButton: previousButton,
+		ReloadButton: reloadButton,
 		UrlInput:       urlInput,
 	}
 }
