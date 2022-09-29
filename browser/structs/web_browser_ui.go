@@ -2,11 +2,13 @@ package structs
 
 import (
 	"layout"
+	"log"
 	renderer_structs "renderer/structs"
 	ui_structs "ui/structs"
 )
 
 type WebBrowserUI struct {
+	HeadBar  *HeadBar
 	Viewport *ui_structs.CanvasWidget
 }
 
@@ -14,18 +16,26 @@ func CreateWebBrowserUI(webBrowser *WebBrowser) *WebBrowserUI {
 	window := webBrowser.Window
 
 	rootFrame := ui_structs.CreateFrame(ui_structs.HorizontalFrame)
-	viewArea := ui_structs.CreateFrame(ui_structs.VerticalFrame)
 
+	headBar := CreateHeadBar()
+	window.RegisterInput(headBar.UrlInput)
+	rootFrame.AddWidget(headBar.Frame)
+
+	viewArea := ui_structs.CreateFrame(ui_structs.VerticalFrame)
 	viewport := ui_structs.CreateCanvasWidget(GetViewportRenderer(webBrowser))
 	scrollBar := ui_structs.CreateScrollBarWidget(ui_structs.VerticalScrollBar)
+	scrollBar.SetTrackColor("#ccc")
+	scrollBar.SetThumbColor("#aaa")
+	scrollBar.SetWidth(12)
+
 	viewArea.AddWidget(viewport)
 	viewArea.AddWidget(scrollBar)
-
 	rootFrame.AddWidget(viewArea)
+
 	window.SetRootFrame(rootFrame)
 
 	return &WebBrowserUI{
-
+		HeadBar:  headBar,
 		Viewport: viewport,
 	}
 }
@@ -41,7 +51,7 @@ func GetViewportRenderer(webBrowser *WebBrowser) func(*ui_structs.CanvasWidget) 
 
 			err := layout.LayoutDocument(drawingContext, document)
 			if err != nil {
-				println("render", "Can't render page: "+err.Error())
+				log.Fatal("render", "Can't render page: "+err.Error())
 			}
 
 			canvas.SetContext(drawingContext)

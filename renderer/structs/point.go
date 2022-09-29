@@ -10,7 +10,7 @@ type Point struct {
 }
 
 func (point Point) Fixed() fixed.Point26_6 {
-	return Fixp(point.X, point.Y)
+	return fixp(point.X, point.Y)
 }
 
 /*
@@ -21,8 +21,8 @@ func (point Point) Distance(p Point) float64 {
 	return math.Hypot(point.X-p.X, point.Y-p.Y)
 }
 
-func (point Point) Interpolate(p1 Point, p2 Point) Point {
-	x := point.X + (p1.X - p2.X)
-	y := point.Y + (p1.Y - p2.Y)
+func (point Point) Interpolate(p1 Point, t float64) Point {
+	x := point.X + (p1.X-point.X)*t
+	y := point.Y + (p1.Y-point.Y)*t
 	return Point{x, y}
 }

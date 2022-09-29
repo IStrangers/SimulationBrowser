@@ -135,7 +135,7 @@ func (window *Window) Destroy() {
 重新创建上下文
 */
 func (window *Window) RecreateContext() {
-	window.context = renderer_structs.CreateContext(window.width,window.height)
+	window.context = renderer_structs.CreateContext(window.width, window.height)
 }
 
 func (window *Window) GetContext() *renderer_structs.Context {
@@ -152,7 +152,7 @@ func (window *Window) SetRootFrame(rootFrame *Frame) *Window {
 	return window
 }
 
-func (window *Window) SetCursor(cursorType CursorType)  {
+func (window *Window) SetCursor(cursorType CursorType) {
 	switch cursorType {
 	case PointerCursor:
 		window.glw.SetCursor(window.pointerCursor)
@@ -162,7 +162,7 @@ func (window *Window) SetCursor(cursorType CursorType)  {
 }
 
 func (window *Window) AddOverlay(overlay *Overlay) {
-	window.overlays = append(window.overlays,overlay)
+	window.overlays = append(window.overlays, overlay)
 	window.hasActiveOverlay = true
 }
 
@@ -178,17 +178,20 @@ func (window *Window) RemoveOverlay(overlay *Overlay) {
 	}
 }
 
-
 func (window *Window) EnableContextMenus() {
 	window.contextMenu = CreateContextMenu()
 }
 
-func (window *Window) AddContextMenuEntry(entryText string,action func()) {
-	window.contextMenu.AddContextMenuEntry(entryText,action)
+func (window *Window) AddContextMenuEntry(entryText string, action func()) {
+	window.contextMenu.AddContextMenuEntry(entryText, action)
 }
 
 func (window *Window) DestroyContextMenu() {
 	window.RemoveOverlay(window.contextMenu.overlay)
 	window.contextMenu.DestroyContextMenu()
 	window.SetCursor(DefaultCursor)
+}
+
+func (window *Window) RegisterInput(input *InputWidget) {
+	window.registeredInputs = append(window.registeredInputs, input)
 }

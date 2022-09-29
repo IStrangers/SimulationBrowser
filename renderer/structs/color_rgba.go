@@ -1,6 +1,7 @@
 package structs
 
 import (
+	"log"
 	"regexp"
 	"strconv"
 	"strings"
@@ -61,7 +62,7 @@ func ConvertColorToColorRGBA(color string) *ColorRGBA {
 func hexToFloatInRange(hex string) float64 {
 	number, err := strconv.ParseInt(hex, 16, 0)
 	if err != nil {
-		println(err.Error())
+		log.Fatal(err)
 	}
 	return float64(number / 255)
 }

@@ -2,11 +2,13 @@ package structs
 
 import (
 	"github.com/goki/freetype/raster"
+	"github.com/goki/freetype/truetype"
+	"golang.org/x/image/draw"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/basicfont"
+	"golang.org/x/image/math/f64"
 	"image"
 	"image/color"
-	"image/draw"
 )
 
 var (
@@ -45,7 +47,7 @@ func CreateContext(width, height int) *Context {
 }
 
 func CreateContextByImage(im image.Image) *Context {
-	return CreateContextByRGBA(ImageToRGBA(im))
+	return CreateContextByRGBA(imageToRGBA(im))
 }
 
 func CreateContextByRGBA(im *image.RGBA) *Context {
@@ -68,7 +70,7 @@ func CreateContextByRGBA(im *image.RGBA) *Context {
 }
 
 func (context *Context) SetHexColor(backgroundColor string) {
-	r, g, b, a := ParseHexColor(backgroundColor)
+	r, g, b, a := parseHexColor(backgroundColor)
 	context.SetRGBA255(r, g, b, a)
 }
 
@@ -195,4 +197,142 @@ func (context *Context) FillByPainter(painter raster.Painter) {
 func (context *Context) DrawImage(src image.Image, x int, y int) {
 	dest, _ := context.GetImage().(draw.Image)
 	draw.Draw(dest, src.Bounds().Add(image.Pt(x, y)), src, image.Point{}, draw.Over)
+}
+
+func (context *Context) Width() int {
+	return context.width
+}
+
+func (context *Context) Height() int {
+	return context.height
+}
+
+func (context *Context) Clear() {
+	src := image.NewUniform(context.color)
+	draw.Draw(context.im, context.im.Bounds(), src, image.Point{}, draw.Src)
+}
+
+func (context *Context) SetFont(font *truetype.Font, points float64) {
+	context.fontFace = truetype.NewFace(font, &truetype.Options{Size: points})
+	context.fontHeight = points * 72 / 96
+}
+
+func (context *Context) MeasureString(s string) (w, h float64) {
+	d := &font.Drawer{
+		Face: context.fontFace,
+	}
+	a := d.MeasureString(s)
+	return float64(a >> 6), context.fontHeight
+}
+
+func (context *Context) DrawStringAnchored(s string, x, y, ax, ay float64) {
+	w, h := context.MeasureString(s)
+	x -= ax * w
+	y += ay * h
+	if context.mask == nil {
+		context.drawString(context.im, s, x, y)
+	} else {
+		im := image.NewRGBA(image.Rect(0, 0, context.width, context.height))
+		context.drawString(im, s, x, y)
+		draw.DrawMask(context.im, context.im.Bounds(), im, image.Point{}, context.mask, image.Point{}, draw.Over)
+	}
+}
+
+func (context *Context) drawString(im *image.RGBA, s string, x, y float64) {
+	d := &font.Drawer{
+		Dst:  im,
+		Src:  image.NewUniform(context.color),
+		Face: context.fontFace,
+		Dot:  fixp(x, y),
+	}
+	prevC := rune(-1)
+	for _, c := range s {
+		if prevC >= 0 {
+			d.Dot.X += d.Face.Kern(prevC, c)
+		}
+		dr, mask, maskp, advance, ok := d.Face.Glyph(d.Dot, c)
+		if !ok {
+			continue
+		}
+		sr := dr.Sub(dr.Min)
+
+		transformer := draw.BiLinear
+		fx, fy := float64(dr.Min.X), float64(dr.Min.Y)
+		m := context.matrix.Translate(fx, fy)
+		s2d := f64.Aff3{m.XX, m.XY, m.X0, m.YX, m.YY, m.Y0}
+		transformer.Transform(d.Dst, s2d, d.Src, sr, draw.Over, &draw.Options{
+			SrcMask:  mask,
+			SrcMaskP: maskp,
+		})
+		d.Dot.X += advance
+		prevC = c
+	}
+}
+
+func (context *Context) DrawString(s string, x, y float64) {
+	context.DrawStringAnchored(s, x, y, 0, 0)
+}
+
+func (context *Context) SetLineWidth(lineWidth float64) {
+	context.lineWidth = lineWidth
+}
+
+func (context *Context) SetLineJoinRound() {
+	context.lineJoin = LineJoinRound
+}
+
+func (context *Context) capper() raster.Capper {
+	switch context.lineCap {
+	case LineCapButt:
+		return raster.ButtCapper
+	case LineCapRound:
+		return raster.RoundCapper
+	case LineCapSquare:
+		return raster.SquareCapper
+	}
+	return nil
+}
+
+func (context *Context) joiner() raster.Joiner {
+	switch context.lineJoin {
+	case LineJoinBevel:
+		return raster.BevelJoiner
+	case LineJoinRound:
+		return raster.RoundJoiner
+	}
+	return nil
+}
+
+func (context *Context) stroke(painter raster.Painter) {
+	path := context.strokePath
+	if len(context.dashes) > 0 {
+		path = dashed(path, context.dashes, context.dashOffset)
+	} else {
+		path = rasterPath(flattenPath(path))
+	}
+	r := context.rasterizer
+	r.UseNonZeroWinding = true
+	r.Clear()
+	r.AddStroke(path, fix(context.lineWidth), context.capper(), context.joiner())
+	r.Rasterize(painter)
+}
+
+func (context *Context) StrokePreserve() {
+	var painter raster.Painter
+	if context.mask == nil {
+		if pattern, ok := context.strokePattern.(*SolidPattern); ok {
+			p := raster.NewRGBAPainter(context.im)
+			p.SetColor(pattern.color)
+			painter = p
+		}
+	}
+	if painter == nil {
+		painter = CreatePatternPainter(context.im, context.mask, context.strokePattern)
+	}
+	context.stroke(painter)
+}
+
+func (context *Context) Stroke() {
+	context.StrokePreserve()
+	context.ClearPath()
 }
