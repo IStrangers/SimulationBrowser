@@ -13,6 +13,17 @@ func CreateApp(name string) *App {
 	}
 }
 
+func (app *App) Run(callback func()) {
+	for {
+		for _, window := range app.windows {
+			if window.IsVisible() && !window.GetGLW().ShouldClose() {
+				window.ProcessFrame()
+			}
+		}
+		callback()
+	}
+}
+
 func (app *App) AddWindow(window *ui_structs.Window) {
 	app.windows = append(app.windows, window)
 }

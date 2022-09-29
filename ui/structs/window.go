@@ -195,3 +195,15 @@ func (window *Window) DestroyContextMenu() {
 func (window *Window) RegisterInput(input *InputWidget) {
 	window.registeredInputs = append(window.registeredInputs, input)
 }
+
+func (window *Window) IsVisible() bool {
+	return window.visible
+}
+
+func (window *Window) GetGLW() *glfw.Window {
+	return window.glw
+}
+
+func (window *Window) ProcessFrame() {
+
+}

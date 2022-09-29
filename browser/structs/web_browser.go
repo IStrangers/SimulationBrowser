@@ -30,15 +30,16 @@ func CreateWebBrowser() *WebBrowser {
 
 	webBrowser := &WebBrowser{
 		Settings: settings,
+		Profiler: profiler_structs.CreateProfiler(),
 	}
 
-	webBrowser.Profiler = profiler_structs.CreateProfiler()
-
-	app := CreateApp(WebBrowserName)
 	window := ui_structs.CreateWindow(WebBrowserName, settings.WindowWidth, settings.WindowHeight, settings.HiDPI)
-	app.AddWindow(window)
 	webBrowser.Window = window
 	webBrowser.UI = CreateWebBrowserUI(webBrowser)
+
+	app := CreateApp(WebBrowserName)
+	app.AddWindow(window)
+	app.Run(func() {})
 
 	return webBrowser
 }
