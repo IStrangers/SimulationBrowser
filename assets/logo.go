@@ -6,7 +6,7 @@ import (
 )
 
 func Logo() []byte {
-	data, err := os.ReadFile("./assets/images/SimulationBrowser.ico")
+	data, err := os.ReadFile("./assets/images/Aix.ico")
 	if err != nil {
 		log.Fatal(err)
 		return []byte{}
