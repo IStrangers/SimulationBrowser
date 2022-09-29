@@ -59,25 +59,27 @@ func registerUIWidget(webBrowser *WebBrowser,headBar *HeadBar) {
 
 		app := webBrowser.App
 		currentDocument := webBrowser.CurrentDocument
-		if currentDocument.DebugFlag {
+		debugger := webBrowser.DebuggerMap[currentDocument]
+		if debugger != nil {
 
 			window.AddContextMenuEntry("关闭调试", func() {
 				window.RemoveStaticOverlay("debugOverlay")
-				currentDocument.DebugFlag = false
+				debugger.DebugFlag = false
 
-				if currentDocument.DebugWindow != nil {
-					app.DestroyWindow(currentDocument.DebugWindow)
-					currentDocument.DebugWindow = nil
-					currentDocument.DebugTree = nil
+				if debugger.DebugWindow != nil {
+					app.DestroyWindow(debugger.DebugWindow)
+					debugger.DebugWindow = nil
+					debugger.DebugTree = nil
 				}
+				webBrowser.DebuggerMap[currentDocument] = nil
 			})
 
-			if currentDocument.DebugWindow != nil {
+			if debugger.DebugWindow != nil {
 
 				window.AddContextMenuEntry("隐藏DOM树", func() {
-					app.DestroyWindow(currentDocument.DebugWindow)
-					currentDocument.DebugWindow = nil
-					currentDocument.DebugTree = nil
+					app.DestroyWindow(debugger.DebugWindow)
+					debugger.DebugWindow = nil
+					debugger.DebugTree = nil
 				})
 
 			} else {
@@ -86,23 +88,23 @@ func registerUIWidget(webBrowser *WebBrowser,headBar *HeadBar) {
 					tree := ui_structs.CreateTreeWidget()
 					tree.SetFontSize(14)
 
-					currentDocument.DebugWindow = ui_structs.CreateWindow("HTML结构树", 600, 800, true)
-					currentDocument.DebugTree = tree
+					debugger.DebugWindow = ui_structs.CreateWindow("HTML结构树", 600, 800, true)
+					debugger.DebugTree = tree
 
 					frame := ui_structs.CreateFrame(ui_structs.HorizontalFrame)
 					frame.AddWidget(tree)
 
-					currentDocument.DebugWindow.RegisterTree(tree)
-					currentDocument.DebugWindow.SetRootFrame(frame)
-					currentDocument.DebugWindow.Show()
+					debugger.DebugWindow.RegisterTree(tree)
+					debugger.DebugWindow.SetRootFrame(frame)
+					debugger.DebugWindow.Show()
 
-					app.AddWindow(currentDocument.DebugWindow)
+					app.AddWindow(debugger.DebugWindow)
 
 					treeNodeDOM := treeNodeFromDOM(currentDocument.DOM)
 					tree.SetSelectCallback(func(selectedNode *ui_structs.TreeWidgetNode) {
-						if currentDocument.DebugFlag {
+						if debugger.DebugFlag {
 							child, _ := currentDocument.DOM.FindByXPath(selectedNode.Value)
-							currentDocument.SelectedElement = child
+							debugger.SelectedElement = child
 							showDebugOverlay(webBrowser)
 						}
 					})
@@ -117,7 +119,7 @@ func registerUIWidget(webBrowser *WebBrowser,headBar *HeadBar) {
 		} else {
 
 			window.AddContextMenuEntry("开启调试", func() {
-				currentDocument.DebugFlag = true
+				webBrowser.DebuggerMap[currentDocument] = CreateDebugger(true)
 			})
 
 		}

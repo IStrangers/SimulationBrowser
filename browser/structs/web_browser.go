@@ -20,6 +20,7 @@ type WebBrowser struct {
 	App *App
 	UI       *WebBrowserUI
 	History  *History
+	DebuggerMap map[*renderer_structs.Document]*Debugger
 	Profiler *profiler_structs.Profiler
 	Settings *Settings
 }
@@ -33,6 +34,7 @@ func CreateWebBrowser() *WebBrowser {
 	webBrowser := &WebBrowser{
 		App: CreateApp(WebBrowserName),
 		History:  CreateHistory(),
+		DebuggerMap: make(map[*renderer_structs.Document]*Debugger),
 		Settings: settings,
 		Profiler: profiler_structs.CreateProfiler(),
 	}

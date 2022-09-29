@@ -2,7 +2,6 @@ package structs
 
 import (
 	"net/url"
-	ui_structs "ui/structs"
 )
 
 type Document struct {
@@ -12,11 +11,6 @@ type Document struct {
 
 	RawDocument string
 	DOM         *NodeDOM
-
-	DebugFlag       bool
-	DebugWindow     *ui_structs.Window
-	DebugTree       *ui_structs.TreeWidget
-	SelectedElement *NodeDOM
 
 	OffsetY int
 }

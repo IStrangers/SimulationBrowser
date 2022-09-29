@@ -25,7 +25,8 @@ func treeNodeFromDOM(node *renderer_structs.NodeDOM) *ui_structs.TreeWidgetNode 
 func showDebugOverlay(webBrowser *WebBrowser) {
 	webBrowser.Window.RemoveStaticOverlay("debugOverlay")
 
-	debugEl := webBrowser.CurrentDocument.SelectedElement
+	debugger := webBrowser.DebuggerMap[webBrowser.CurrentDocument]
+	debugEl := debugger.SelectedElement
 	top, left, _, height := debugEl.RenderBox.GetRect()
 	ctx := renderer_structs.CreateContext(int(webBrowser.CurrentDocument.DOM.RenderBox.Width), int(height+20))
 	paintDebugRect(ctx, debugEl)
