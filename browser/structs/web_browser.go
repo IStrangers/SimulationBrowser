@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	WebBrowserName    = "Aix"
+	WebBrowserName    = "SimulationBrowser"
 	WebBrowserVersion = "1.0.0"
 )
 
