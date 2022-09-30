@@ -38,3 +38,23 @@ func CopyWidgetToBuffer(widget Widget, src image.Image) {
 		Max: image.Point{X: width, Y: height},
 	}, src, image.Point{X: left, Y: top}, draw.Over)
 }
+
+func compositeWidget(buffer *image.RGBA, widget Widget) {
+	if widget.NeedsRepaint() {
+		top, left, width, height := widget.ComputedBox().GetCoords()
+
+		draw.Draw(buffer, image.Rectangle{
+			image.Point{int(left), int(top)}, image.Point{int(left + width), int(top + height)},
+		}, widget.Buffer(), image.Point{}, draw.Over)
+
+		widget.SetNeedsRepaint(false)
+	}
+}
+
+func compositeAll(buffer *image.RGBA, widget Widget) {
+	compositeWidget(buffer, widget)
+
+	for _, childWidget := range widget.Widgets() {
+		compositeAll(buffer, childWidget)
+	}
+}

@@ -13,7 +13,7 @@ type GLBackend struct {
 	vao uint32
 	vbo uint32
 
-	texture uint32
+	Texture uint32
 	quad    []float32
 }
 

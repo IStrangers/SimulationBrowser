@@ -2,9 +2,11 @@ package structs
 
 import (
 	"assets"
+	"github.com/go-gl/gl/v3.2-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/goki/freetype/truetype"
 	"image"
+	"image/draw"
 	"log"
 	renderer_structs "renderer/structs"
 )
@@ -237,7 +239,43 @@ func (window *Window) addEvents() {
 }
 
 func (window *Window) generateTexture() {
+	gl.DeleteTextures(1, &window.backend.Texture)
+	window.frameBuffer = window.context.GetImage().(*image.RGBA)
 
+	if window.rootFrame != nil {
+		compositeAll(window.frameBuffer, window.rootFrame)
+	}
+
+	if window.hasStaticOverlay {
+		nBuffer := image.NewRGBA(window.frameBuffer.Bounds())
+		draw.Draw(nBuffer, window.frameBuffer.Bounds(), window.frameBuffer, image.Point{}, draw.Over)
+		window.frameBuffer = nBuffer
+
+		for _, overlay := range window.staticOverlays {
+			draw.Draw(window.frameBuffer, overlay.buffer.Bounds().Add(overlay.position), overlay.buffer, image.Point{}, draw.Over)
+		}
+	}
+
+	if window.hasActiveOverlay {
+		nBuffer := image.NewRGBA(window.frameBuffer.Bounds())
+		draw.Draw(nBuffer, window.frameBuffer.Bounds(), window.frameBuffer, image.Point{}, draw.Over)
+		window.frameBuffer = nBuffer
+
+		for _, overlay := range window.overlays {
+			draw.Draw(window.frameBuffer, overlay.buffer.Bounds().Add(overlay.position), overlay.buffer, image.Point{}, draw.Over)
+		}
+	}
+
+	gl.GenTextures(1, &window.backend.Texture)
+	gl.ActiveTexture(gl.TEXTURE0)
+	gl.BindTexture(gl.TEXTURE_2D, window.backend.Texture)
+	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+
+	gl.TexImage2D(
+		gl.TEXTURE_2D, 0, gl.RGBA,
+		int32(window.frameBuffer.Rect.Size().X), int32(window.frameBuffer.Rect.Size().Y),
+		0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(window.frameBuffer.Pix),
+	)
 }
 
 func (window *Window) RegisterInput(input *InputWidget) {
