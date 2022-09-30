@@ -8,6 +8,7 @@ import (
 	"image"
 	"image/draw"
 	"log"
+	"os"
 	renderer_structs "renderer/structs"
 )
 
@@ -234,8 +235,167 @@ func (window *Window) DestroyContextMenu() {
 	window.SetCursor(DefaultCursor)
 }
 
-func (window *Window) addEvents() {
+func (window *Window) refreshContextMenu() {
+	ctx := renderer_structs.CreateContextByRGBA(window.contextMenu.overlay.buffer)
+	menuWidth := float64(window.contextMenu.overlay.buffer.Rect.Max.X)
+	textLeft := 4.
+	ctx.SetHexColor("#eee")
+	ctx.Clear()
 
+	font, _ := truetype.Parse(assets.OpenSans(400))
+	ctx.SetHexColor("#222")
+	ctx.SetFont(font, 16)
+
+	for idx, entry := range window.contextMenu.entries {
+		if window.contextMenu.selectedEntry == entry {
+			ctx.DrawRectangle(0, float64(idx*20), menuWidth, 20)
+			ctx.SetHexColor("#ccc")
+			ctx.Fill()
+		}
+
+		ctx.SetHexColor("#222")
+		ctx.DrawString(prepEntry(ctx, entry.entryText, menuWidth-textLeft), textLeft, 16+float64(idx*20))
+		ctx.Fill()
+	}
+}
+
+func (window *Window) SelectEntry(entry *MenuEntry) {
+	window.contextMenu.selectedEntry = entry
+	window.refreshContextMenu()
+	window.SetCursor(PointerCursor)
+}
+
+func (window *Window) DeselectEntries() {
+	if window.contextMenu.selectedEntry != nil {
+		window.contextMenu.selectedEntry = nil
+		window.refreshContextMenu()
+		window.SetCursor(DefaultCursor)
+	}
+}
+
+func (window *Window) addEvents() {
+	window.glw.SetFocusCallback(func(w *glfw.Window, focused bool) {
+	})
+
+	window.glw.SetSizeCallback(func(w *glfw.Window, width, height int) {
+		xScale, yScale := float32(1), float32(1)
+		if window.hiDPI {
+			xScale, yScale = w.GetContentScale()
+		}
+
+		swidth := int(float32(width) / xScale)
+		sheight := int(float32(height) / yScale)
+
+		window.width, window.height = swidth, sheight
+		window.RecreateContext()
+		//window.RecreateOverlayContext()
+		window.needsReflow = true
+	})
+
+	window.glw.SetCursorPosCallback(func(w *glfw.Window, x, y float64) {
+		xScale, yScale := float32(1), float32(1)
+		if window.hiDPI {
+			xScale, yScale = w.GetContentScale()
+		}
+
+		window.cursorX, window.cursorY = x/float64(xScale), y/float64(yScale)
+		window.ProcessPointerPosition()
+	})
+
+	window.glw.SetCharCallback(func(w *glfw.Window, char rune) {
+		if window.activeInput != nil {
+			inputVal, cursorPos := window.activeInput.value, window.activeInput.cursorPosition
+
+			window.activeInput.value = inputVal[:len(inputVal)+cursorPos] + string(char) + inputVal[len(inputVal)+cursorPos:]
+			window.activeInput.needsRepaint = true
+		}
+	})
+
+	window.glw.SetCloseCallback(func(w *glfw.Window) {
+		os.Exit(0)
+	})
+
+	window.glw.SetKeyCallback(func(w *glfw.Window, key glfw.Key, sc int, action glfw.Action, mods glfw.ModifierKey) {
+		switch key {
+		case glfw.KeyBackspace:
+			if action == glfw.Repeat || action == glfw.Release {
+				if window.activeInput != nil && len(window.activeInput.value) > 0 {
+					if window.activeInput.cursorPosition == 0 {
+						window.activeInput.value = window.activeInput.value[:len(window.activeInput.value)-1]
+					} else {
+						inputVal, cursorPos := window.activeInput.value, window.activeInput.cursorPosition
+
+						if cursorPos+len(inputVal) > 0 {
+							window.activeInput.value = inputVal[:len(inputVal)+cursorPos-1] + inputVal[len(inputVal)+cursorPos:]
+						}
+					}
+					window.activeInput.needsRepaint = true
+				}
+			}
+			break
+		case glfw.KeyEscape:
+			if action == glfw.Release {
+				window.DestroyContextMenu()
+
+				if window.activeInput != nil {
+					window.activeInput.active = false
+					window.activeInput.selected = false
+					window.activeInput.needsRepaint = true
+					window.activeInput = nil
+				}
+			}
+
+			break
+		case glfw.KeyUp:
+			if action == glfw.Release || action == glfw.Repeat {
+				window.ProcessArrowKeys("up")
+			}
+			break
+		case glfw.KeyDown:
+			if action == glfw.Release || action == glfw.Repeat {
+				window.ProcessArrowKeys("down")
+			}
+			break
+		case glfw.KeyLeft:
+			if action == glfw.Release || action == glfw.Repeat {
+				window.ProcessArrowKeys("left")
+			}
+			break
+		case glfw.KeyRight:
+			if action == glfw.Release || action == glfw.Repeat {
+				window.ProcessArrowKeys("right")
+			}
+			break
+		case glfw.KeyV:
+			if action == glfw.Release && mods == glfw.ModControl {
+				if window.activeInput != nil {
+					if window.activeInput.cursorPosition == 0 {
+						window.activeInput.value = window.activeInput.value + glfw.GetClipboardString()
+					} else {
+						inputVal, cursorPos := window.activeInput.value, window.activeInput.cursorPosition
+						window.activeInput.value = inputVal[:len(inputVal)+cursorPos] + glfw.GetClipboardString() + inputVal[len(inputVal)+cursorPos:]
+					}
+					window.activeInput.needsRepaint = true
+				}
+			}
+			break
+		case glfw.KeyEnter:
+			if action == glfw.Release {
+				window.ProcessReturnKey()
+			}
+			break
+		}
+	})
+
+	window.glw.SetMouseButtonCallback(func(w *glfw.Window, button glfw.MouseButton, action glfw.Action, mod glfw.ModifierKey) {
+		if action == glfw.Release {
+			window.ProcessPointerClick(button)
+		}
+	})
+
+	window.glw.SetScrollCallback(func(w *glfw.Window, x, y float64) {
+		window.ProcessScroll(x, y)
+	})
 }
 
 func (window *Window) generateTexture() {
