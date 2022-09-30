@@ -155,6 +155,10 @@ func (window *Window) SetNeedsReflow(needsReflow bool) *Window {
 	return window
 }
 
+func (window *Window) GetRootFrame() *Frame {
+	return window.rootFrame
+}
+
 func (window *Window) SetRootFrame(rootFrame *Frame) *Window {
 	window.rootFrame = rootFrame
 	return window
@@ -528,6 +532,32 @@ func (window *Window) GetGLW() *glfw.Window {
 	return window.glw
 }
 
-func (window *Window) ProcessFrame() {
+func drawRootFrame(window *Window) {
+	window.rootFrame.computedBox.SetCoords(0, 0, float64(window.width), float64(window.height))
 
+	window.rootFrame.draw()
+}
+
+func (window *Window) ProcessFrame() {
+	window.glw.MakeContextCurrent()
+	window.glw.SwapBuffers()
+
+	if window.needsReflow {
+		drawRootFrame(window)
+		window.needsReflow = false
+	} else {
+		redrawWidgets(window.rootFrame)
+	}
+
+	window.generateTexture()
+
+	xScale, yScale := float32(1), float32(1)
+	if window.hiDPI {
+		xScale, yScale = window.glw.GetContentScale()
+	}
+
+	gl.Viewport(0, 0, int32(float32(window.width)*xScale), int32(float32(window.height)*yScale))
+	gl.DrawArrays(gl.TRIANGLES, 0, 6)
+
+	glfw.PollEvents()
 }

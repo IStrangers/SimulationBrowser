@@ -24,8 +24,17 @@ func (app *App) Run(callback func()) {
 	}
 }
 
+func setWidgetWindow(widget ui_structs.Widget, window *ui_structs.Window) {
+	widget.SetWindow(window)
+
+	for _, childWidget := range widget.Widgets() {
+		setWidgetWindow(childWidget, window)
+	}
+}
+
 func (app *App) AddWindow(window *ui_structs.Window) {
 	app.windows = append(app.windows, window)
+	setWidgetWindow(window.GetRootFrame(), window)
 }
 
 func (app *App) DestroyWindow(window *ui_structs.Window) {

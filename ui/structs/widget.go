@@ -58,3 +58,13 @@ func compositeAll(buffer *image.RGBA, widget Widget) {
 		compositeAll(buffer, childWidget)
 	}
 }
+
+func redrawWidgets(widget Widget) {
+	if widget.NeedsRepaint() {
+		widget.draw()
+	} else {
+		for _, childWidget := range widget.Widgets() {
+			redrawWidgets(childWidget)
+		}
+	}
+}
