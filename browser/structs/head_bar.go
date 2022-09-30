@@ -2,6 +2,7 @@ package structs
 
 import (
 	"assets"
+	"common"
 	ui_structs "ui/structs"
 )
 
@@ -69,7 +70,7 @@ func CreateHeadBar() *HeadBar {
 	pv.SetHeight(1)
 
 	statusBar := ui_structs.CreateFrame(ui_structs.HorizontalFrame)
-	statusLabel := ui_structs.CreateLabelWidget("The " + WebBrowserName + " Web Browser")
+	statusLabel := ui_structs.CreateLabelWidget("The " + common.WebBrowserName + " Web Browser")
 	statusLabel.SetBackgroundColor("#ddd")
 	statusLabel.SetFontColor("#333")
 	statusLabel.SetFontSize(15)
@@ -89,7 +90,7 @@ func CreateHeadBar() *HeadBar {
 		ToolsButton:    toolsButton,
 		NextButton:     nextButton,
 		PreviousButton: previousButton,
-		ReloadButton: reloadButton,
+		ReloadButton:   reloadButton,
 		UrlInput:       urlInput,
 	}
 }

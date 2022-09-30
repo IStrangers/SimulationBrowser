@@ -1,15 +1,11 @@
 package structs
 
 import (
+	"common"
 	profiler_structs "profiler/structs"
 	renderer_structs "renderer/structs"
 	"runtime"
 	ui_structs "ui/structs"
-)
-
-const (
-	WebBrowserName    = "Aix"
-	WebBrowserVersion = "1.0.0"
 )
 
 type WebBrowser struct {
@@ -32,19 +28,21 @@ func CreateWebBrowser() *WebBrowser {
 	settings := LoadSettings(defaultSettingsPath)
 
 	webBrowser := &WebBrowser{
-		App:         CreateApp(WebBrowserName),
+		App:         CreateApp(common.WebBrowserName),
 		History:     CreateHistory(),
 		DebuggerMap: make(map[*renderer_structs.Document]*Debugger),
 		Settings:    settings,
 		Profiler:    profiler_structs.CreateProfiler(),
 	}
 
-	window := ui_structs.CreateWindow(WebBrowserName, settings.WindowWidth, settings.WindowHeight, settings.HiDPI)
+	window := ui_structs.CreateWindow(common.WebBrowserName, settings.WindowWidth, settings.WindowHeight, settings.HiDPI)
 	webBrowser.Window = window
 	webBrowser.UI = CreateWebBrowserUI(webBrowser)
 
 	app := webBrowser.App
 	app.AddWindow(window)
+
+	loadDocument(webBrowser, settings.HomePage)
 
 	return webBrowser
 }

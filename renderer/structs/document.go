@@ -16,3 +16,14 @@ type Document struct {
 
 	OffsetY int
 }
+
+func (document *Document) GetDocumentTitle() string {
+	pageTitle := ""
+	if document.DOM != nil {
+		titleNode, err := document.DOM.FindChildByName("title")
+		if err == nil && len(titleNode.Children) > 0 {
+			return titleNode.Children[0].TextContent
+		}
+	}
+	return pageTitle
+}

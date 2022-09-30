@@ -1,14 +1,79 @@
 package structs
 
 import (
+	"filesystem"
 	"fmt"
 	"image"
+	"renderer"
 	renderer_structs "renderer/structs"
+	"strings"
 	ui_structs "ui/structs"
 )
 
-func loadDocumentByUrl(webBrowser *WebBrowser)  {
+func loadDocument(webBrowser *WebBrowser, url string) {
+	URL := filesystem.ParseURL(url)
+	window := webBrowser.Window
+	history := webBrowser.History
+	currentDocument := webBrowser.CurrentDocument
+	ui := webBrowser.UI
+	headBar := ui.HeadBar
+	urlInput := headBar.UrlInput
 
+	if URL.Scheme == "" && URL.Host == "" {
+		if !strings.HasPrefix(URL.Path, "/") {
+			URL.Path = "/" + URL.Path
+		}
+
+		if strings.HasSuffix(currentDocument.URL.String(), "/") {
+			URL.Path = strings.TrimSuffix(currentDocument.URL.Path, "/") + URL.Path
+		}
+
+		URL = filesystem.ParseURL(currentDocument.URL.Scheme + "://" + currentDocument.URL.Host + URL.Path)
+	}
+
+	resource := filesystem.GetResourceByURL(URL)
+	rawDocument := string(resource.Body)
+
+	switch strings.Split(resource.ContentType, ";")[0] {
+	case "text/plain", "text/xml", "application/json":
+		//ParsePlainText(rawDocument)
+	default:
+		webBrowser.CurrentDocument = renderer.ParseHTMLDocument(rawDocument)
+	}
+	currentDocument = webBrowser.CurrentDocument
+
+	currentDocument.URL = resource.URL
+	currentDocument.ContentType = resource.ContentType
+	currentDocument.Title = currentDocument.GetDocumentTitle()
+
+	urlInput.SetValue(webBrowser.CurrentDocument.URL.String())
+
+	window.SetTitle(currentDocument.Title)
+
+	window.RemoveStaticOverlay("debugOverlay")
+
+	if history.PageCount() == 0 || history.Last().String() != resource.URL.String() {
+		history.Push(resource.URL)
+	}
+}
+
+func loadDocumentByUrl(webBrowser *WebBrowser) {
+	ui := webBrowser.UI
+	headBar := ui.HeadBar
+	urlInput := headBar.UrlInput
+	statusLabel := headBar.StatusLabel
+
+	viewport := ui.Viewport
+	view := viewport.View
+
+	statusLabel.SetContent("Loading: " + urlInput.GetValue())
+	statusLabel.RequestRepaint()
+
+	loadDocument(webBrowser, urlInput.GetValue())
+
+	view.SetOffset(0)
+	view.SetDrawingRepaint(true)
+	view.RequestRepaint()
 }
 
 func treeNodeFromDOM(node *renderer_structs.NodeDOM) *ui_structs.TreeWidgetNode {

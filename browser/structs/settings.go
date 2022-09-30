@@ -1,6 +1,7 @@
 package structs
 
 import (
+	"common"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -17,7 +18,7 @@ type Settings struct {
 }
 
 var defaultSettings = Settings{
-	HomePage: WebBrowserName + "://HomePage",
+	HomePage: common.WebBrowserName + "://HomePage",
 
 	WindowWidth:  600,
 	WindowHeight: 600,

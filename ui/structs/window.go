@@ -135,6 +135,10 @@ func (window *Window) Destroy() {
 	window = nil
 }
 
+func (window *Window) SetTitle(title string) {
+	window.glw.SetTitle(title)
+}
+
 /*
 重新创建上下文
 */

@@ -1,7 +1,7 @@
 package network
 
 import (
-	browser_structs "browser/structs"
+	"common"
 	"io"
 	"log"
 	"net/http"
@@ -11,7 +11,7 @@ import (
 
 var httpClient = &http.Client{}
 var defaultHeaders = map[string]string{
-	"User-Agent": browser_structs.WebBrowserName + "/" + browser_structs.WebBrowserVersion,
+	"User-Agent": common.WebBrowserName + "/" + common.WebBrowserVersion,
 }
 
 func SendGetRequest(url string) (*network_structs.RequestResult, error) {

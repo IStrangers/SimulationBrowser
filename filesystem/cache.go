@@ -1,7 +1,6 @@
 package filesystem
 
 import (
-	browser_structs "browser/structs"
 	"common"
 	"encoding/base64"
 	filesystem_structs "filesystem/structs"
@@ -21,7 +20,7 @@ var imageCache = &filesystem_structs.ImageCache{
 func ParseURL(u string) *url.URL {
 	URL, err := url.Parse(u)
 	if err != nil {
-		URL = ParseURL(browser_structs.WebBrowserName + "://error?err=failedToParseURL")
+		URL = ParseURL(common.WebBrowserName + "://error?err=failedToParseURL")
 	}
 	return URL
 }
@@ -37,7 +36,7 @@ func GetResource(url string) *filesystem_structs.Resource {
 
 func GetResourceByURL(URL *url.URL) *filesystem_structs.Resource {
 	switch URL.Scheme {
-	case browser_structs.WebBrowserName:
+	case common.WebBrowserName:
 		return getInternalPage(URL)
 	case "file":
 		return getLocalPage(URL)

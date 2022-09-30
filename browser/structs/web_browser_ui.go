@@ -1,6 +1,7 @@
 package structs
 
 import (
+	"common"
 	"log"
 	ui_structs "ui/structs"
 )
@@ -45,17 +46,17 @@ func registerUIWidget(webBrowser *WebBrowser, headBar *HeadBar) {
 	window.RegisterButton(headBar.ToolsButton, func() {
 
 		window.AddContextMenuEntry("首页", func() {
-			urlInput.SetValue(WebBrowserName + "://HomePage")
+			urlInput.SetValue(common.WebBrowserName + "://HomePage")
 			loadDocumentByUrl(webBrowser)
 		})
 
 		window.AddContextMenuEntry("历史记录", func() {
-			urlInput.SetValue(WebBrowserName + "://History")
+			urlInput.SetValue(common.WebBrowserName + "://History")
 			loadDocumentByUrl(webBrowser)
 		})
 
 		window.AddContextMenuEntry("关于", func() {
-			urlInput.SetValue(WebBrowserName + "://About")
+			urlInput.SetValue(common.WebBrowserName + "://About")
 			loadDocumentByUrl(webBrowser)
 		})
 
@@ -216,11 +217,11 @@ func registerUIEventListener(browser *WebBrowser, headBar *HeadBar) {
 						loadDocumentByUrl(browser)
 					})
 					window.AddContextMenuEntry("历史记录", func() {
-						headBar.UrlInput.SetValue(WebBrowserName + "://History")
+						headBar.UrlInput.SetValue(common.WebBrowserName + "://History")
 						loadDocumentByUrl(browser)
 					})
 					window.AddContextMenuEntry("首页", func() {
-						headBar.UrlInput.SetValue(WebBrowserName + "://HomePage")
+						headBar.UrlInput.SetValue(common.WebBrowserName + "://HomePage")
 						loadDocumentByUrl(browser)
 					})
 
