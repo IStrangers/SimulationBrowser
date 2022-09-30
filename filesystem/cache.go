@@ -36,7 +36,7 @@ func GetResource(url string) *filesystem_structs.Resource {
 
 func GetResourceByURL(URL *url.URL) *filesystem_structs.Resource {
 	switch URL.Scheme {
-	case common.WebBrowserName:
+	case strings.ToLower(common.WebBrowserName):
 		return getInternalPage(URL)
 	case "file":
 		return getLocalPage(URL)
@@ -46,8 +46,41 @@ func GetResourceByURL(URL *url.URL) *filesystem_structs.Resource {
 	return GetExternalPage(URL)
 }
 
+func GetHomepage() string {
+	return `<html>
+		<head>
+			<title>HomePage</title>
+		</head>
+		<body>
+			` + common.WebBrowserName + ` Home Page
+		</body>
+	</html>`
+}
+
+func GetHistoryPage() string {
+	return ``
+}
+
+func GetAboutPage() string {
+	return ``
+}
+
 func getInternalPage(URL *url.URL) *filesystem_structs.Resource {
-	resource := &filesystem_structs.Resource{}
+	var body string
+	switch URL.Host {
+	case "HomePage":
+		body = GetHomepage()
+	case "History":
+		body = GetHistoryPage()
+	case "About":
+		body = GetAboutPage()
+	default:
+		body = ""
+	}
+	resource := &filesystem_structs.Resource{
+		Body: body,
+		URL:  URL,
+	}
 	return resource
 }
 
