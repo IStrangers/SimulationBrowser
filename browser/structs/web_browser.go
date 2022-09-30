@@ -15,14 +15,14 @@ const (
 type WebBrowser struct {
 	CurrentDocument *renderer_structs.Document
 	Documents       []*renderer_structs.Document
-	Window   *ui_structs.Window
+	Window          *ui_structs.Window
 
-	App *App
-	UI       *WebBrowserUI
-	History  *History
+	App         *App
+	UI          *WebBrowserUI
+	History     *History
 	DebuggerMap map[*renderer_structs.Document]*Debugger
-	Profiler *profiler_structs.Profiler
-	Settings *Settings
+	Profiler    *profiler_structs.Profiler
+	Settings    *Settings
 }
 
 func CreateWebBrowser() *WebBrowser {
@@ -32,11 +32,11 @@ func CreateWebBrowser() *WebBrowser {
 	settings := LoadSettings(defaultSettingsPath)
 
 	webBrowser := &WebBrowser{
-		App: CreateApp(WebBrowserName),
-		History:  CreateHistory(),
+		App:         CreateApp(WebBrowserName),
+		History:     CreateHistory(),
 		DebuggerMap: make(map[*renderer_structs.Document]*Debugger),
-		Settings: settings,
-		Profiler: profiler_structs.CreateProfiler(),
+		Settings:    settings,
+		Profiler:    profiler_structs.CreateProfiler(),
 	}
 
 	window := ui_structs.CreateWindow(WebBrowserName, settings.WindowWidth, settings.WindowHeight, settings.HiDPI)

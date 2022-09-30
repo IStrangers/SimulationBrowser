@@ -86,6 +86,9 @@ func CreateWindow(title string, width int, height int, hiDPI bool) *Window {
 	window.RecreateContext()
 	glw.MakeContextCurrent()
 
+	window.backend = renderer_structs.CreateGLBackend()
+	window.addEvents()
+	window.generateTexture()
 	return window
 }
 
@@ -227,6 +230,14 @@ func (window *Window) DestroyContextMenu() {
 	window.RemoveOverlay(window.contextMenu.overlay)
 	window.contextMenu.DestroyContextMenu()
 	window.SetCursor(DefaultCursor)
+}
+
+func (window *Window) addEvents() {
+
+}
+
+func (window *Window) generateTexture() {
+
 }
 
 func (window *Window) RegisterInput(input *InputWidget) {
