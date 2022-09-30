@@ -23,8 +23,8 @@ func CreateWebBrowserUI(webBrowser *WebBrowser) *WebBrowserUI {
 
 	window.SetRootFrame(rootFrame)
 
-	registerUIWidget(webBrowser)
-	registerUIEventListener(webBrowser)
+	registerUIWidget(webBrowser, headBar)
+	registerUIEventListener(webBrowser, headBar)
 
 	return &WebBrowserUI{
 		HeadBar:  headBar,
@@ -32,8 +32,7 @@ func CreateWebBrowserUI(webBrowser *WebBrowser) *WebBrowserUI {
 	}
 }
 
-func registerUIWidget(webBrowser *WebBrowser) {
-	headBar := webBrowser.UI.HeadBar
+func registerUIWidget(webBrowser *WebBrowser, headBar *HeadBar) {
 	window := webBrowser.Window
 
 	urlInput := headBar.UrlInput
@@ -155,7 +154,7 @@ func registerUIWidget(webBrowser *WebBrowser) {
 	})
 }
 
-func registerUIEventListener(browser *WebBrowser) {
+func registerUIEventListener(browser *WebBrowser, headBar *HeadBar) {
 	window := browser.Window
 
 	window.RegisterScrollEventListener(func(direction int) {
