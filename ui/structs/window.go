@@ -242,6 +242,14 @@ func (window *Window) RegisterButton(button *ButtonWidget, callback func()) {
 	window.registeredButtons = append(window.registeredButtons, button)
 }
 
+func (window *Window) RegisterScrollEventListener(callback func(direction int)) {
+	window.scrollEventListeners = append(window.scrollEventListeners, callback)
+}
+
+func (window *Window) RegisterClickEventListener(callback func(MouseKey)) {
+	window.clickEventListeners = append(window.clickEventListeners, callback)
+}
+
 func (window *Window) GetCursorPosition() (float64, float64) {
 	return window.cursorX, window.cursorY
 }

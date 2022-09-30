@@ -1,6 +1,7 @@
 package structs
 
 import (
+	"log"
 	ui_structs "ui/structs"
 )
 
@@ -22,7 +23,8 @@ func CreateWebBrowserUI(webBrowser *WebBrowser) *WebBrowserUI {
 
 	window.SetRootFrame(rootFrame)
 
-	registerUIWidget(webBrowser,headBar)
+	registerUIWidget(webBrowser)
+	registerUIEventListener(webBrowser)
 
 	return &WebBrowserUI{
 		HeadBar:  headBar,
@@ -30,7 +32,8 @@ func CreateWebBrowserUI(webBrowser *WebBrowser) *WebBrowserUI {
 	}
 }
 
-func registerUIWidget(webBrowser *WebBrowser,headBar *HeadBar) {
+func registerUIWidget(webBrowser *WebBrowser) {
+	headBar := webBrowser.UI.HeadBar
 	window := webBrowser.Window
 
 	urlInput := headBar.UrlInput
@@ -150,4 +153,82 @@ func registerUIWidget(webBrowser *WebBrowser,headBar *HeadBar) {
 		urlInput.SetValue(history.Last().String())
 		loadDocumentByUrl(webBrowser)
 	})
+}
+
+func registerUIEventListener(browser *WebBrowser) {
+	window := browser.Window
+
+	window.RegisterScrollEventListener(func(direction int) {
+		scrollStep := 20
+		currentDocument := browser.CurrentDocument
+		ui := browser.UI
+		viewport := ui.Viewport
+		view := viewport.View
+		scrollBar := viewport.ScrollBar
+
+		body, err := currentDocument.DOM.FindChildByName("body")
+		if err != nil {
+			log.Fatal("render", "Can't find body element: "+err.Error())
+			return
+		}
+
+		if direction > 0 {
+			if view.GetOffset() < 0 {
+				view.SetOffset(view.GetOffset() + scrollStep)
+			}
+		} else {
+			documentOffset := view.GetOffset() + int(body.RenderBox.Height)
+			if float64(documentOffset) >= view.GetHeight() {
+				view.SetOffset(view.GetOffset() - scrollStep)
+			}
+		}
+
+		scrollBar.SetScrollerOffset(float64(view.GetOffset()))
+		scrollBar.SetScrollerSize(body.RenderBox.Height)
+		scrollBar.RequestReflow()
+
+		view.SetDrawingRepaint(false)
+		view.RequestRepaint()
+
+		window.RemoveStaticOverlay("debugOverlay")
+	})
+
+	window.RegisterClickEventListener(func(key ui_structs.MouseKey) {
+		currentDocument := browser.CurrentDocument
+		ui := browser.UI
+		headBar := ui.HeadBar
+		viewport := ui.Viewport
+		view := viewport.View
+		if view.IsPointInside(window.GetCursorPosition()) {
+			if key == ui_structs.MouseLeft {
+				if currentDocument.SelectedElement != nil {
+					if currentDocument.SelectedElement.NodeName == "a" {
+						href := currentDocument.SelectedElement.Attr("href")
+						headBar.UrlInput.SetValue(href)
+						loadDocumentByUrl(browser)
+					}
+				}
+			} else {
+				if currentDocument.SelectedElement != nil {
+					window.AddContextMenuEntry("返回", func() {
+						headBar.PreviousButton.Click()
+					})
+					window.AddContextMenuEntry("重新加载", func() {
+						loadDocumentByUrl(browser)
+					})
+					window.AddContextMenuEntry("历史记录", func() {
+						headBar.UrlInput.SetValue(WebBrowserName + "://History")
+						loadDocumentByUrl(browser)
+					})
+					window.AddContextMenuEntry("首页", func() {
+						headBar.UrlInput.SetValue(WebBrowserName + "://HomePage")
+						loadDocumentByUrl(browser)
+					})
+
+					window.DrawContextMenu()
+				}
+			}
+		}
+	})
+
 }

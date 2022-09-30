@@ -12,5 +12,7 @@ type Document struct {
 	RawDocument string
 	DOM         *NodeDOM
 
+	SelectedElement *NodeDOM
+
 	OffsetY int
 }

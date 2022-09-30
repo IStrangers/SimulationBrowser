@@ -221,3 +221,12 @@ func (widget *BaseWidget) AddWidget(wd Widget) {
 		widget.window.rootFrame.RequestReflow()
 	}
 }
+
+func (widget *BaseWidget) IsPointInside(x, y float64) bool {
+	if widget.window.hasActiveOverlay {
+		return false
+	}
+
+	top, left, width, height := widget.GetRect()
+	return x > left && x < left+width && y > top && y < top+height
+}
