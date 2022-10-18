@@ -367,6 +367,8 @@ func (parser *HTMLParser) createRootNodeDOM() *NodeDOM {
 		NodeType:   NodeType_Root,
 		NodeName:   "ROOT",
 		Attributes: nil,
+		Style:      CreateCSSStyleSheetByInitialStyle("ROOT", ""),
+		RenderBox:  &RenderBox{},
 		Children:   nil,
 	}
 	return rootNodeDOM
