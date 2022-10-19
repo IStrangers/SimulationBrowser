@@ -372,3 +372,45 @@ func (context *Context) SetRGBA(r, g, b, a float64) {
 func (context *Context) SetRGB(r, g, b float64) {
 	context.SetRGBA(r, g, b, 1)
 }
+
+func (context *Context) WordWrap(s string, w float64) []string {
+	return wordWrap(context, s, w)
+}
+
+func (context *Context) MeasureStringWrapped(s string, width, lineSpacing float64) float64 {
+	lines := context.WordWrap(s, width)
+
+	h := float64(len(lines)) * context.fontHeight * lineSpacing
+	h -= (lineSpacing - 1) * context.fontHeight
+
+	return h
+}
+
+func (context *Context) FontHeight() float64 {
+	return context.fontHeight
+}
+
+func (context *Context) DrawStringWrapped(s string, x, y, ax, ay, width, lineSpacing float64, align Align) {
+	lines := context.WordWrap(s, width)
+
+	h := float64(len(lines)) * context.fontHeight * lineSpacing
+	h -= (lineSpacing - 1) * context.fontHeight
+
+	x -= ax * width
+	y -= ay * h
+	switch align {
+	case AlignLeft:
+		ax = 0
+	case AlignCenter:
+		ax = 0.5
+		x += width / 2
+	case AlignRight:
+		ax = 1
+		x += width
+	}
+	ay = 1
+	for _, line := range lines {
+		context.DrawStringAnchored(line, x, y, ax, ay)
+		y += context.fontHeight * lineSpacing
+	}
+}

@@ -19,12 +19,13 @@ func getNodeChildren(node *renderer_structs.NodeDOM) []*renderer_structs.NodeDOM
 	return node.Children
 }
 
-func calculateNode(context *renderer_structs.Context, node *renderer_structs.NodeDOM, index int) {
+func calculateNode(context *renderer_structs.Context, node *renderer_structs.NodeDOM, position int) {
 	if node.Style == nil {
 		return
 	}
 	switch node.Style.Display {
 	case "block":
+		calculateBlockLayout(context, node, position)
 		break
 	case "inline":
 		break
@@ -39,6 +40,7 @@ func paintNode(context *renderer_structs.Context, node *renderer_structs.NodeDOM
 	}
 	switch node.Style.Display {
 	case "block":
+		paintBlockElement(context, node)
 		break
 	case "inline":
 		break
