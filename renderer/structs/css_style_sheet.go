@@ -18,6 +18,15 @@ type CSSStyleSheet struct {
 
 func CreateCSSStyleSheetByInitialStyle(nodeName string, css string) *CSSStyleSheet {
 	styleSheet := CreateCSSStyleSheetByCSSString(css)
+
+	if styleSheet.BackgroundColor == nil {
+		styleSheet.BackgroundColor = &ColorRGBA{1, 1, 1, 0}
+	}
+
+	if styleSheet.Position == "" {
+		styleSheet.Position = "Normal"
+	}
+
 	if styleSheet.FontSize == float64(0) {
 		fontSize := elementFontTable[nodeName]
 		if fontSize != float64(0) {
