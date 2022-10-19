@@ -9,6 +9,7 @@ import (
 	"golang.org/x/image/math/f64"
 	"image"
 	"image/color"
+	"math"
 )
 
 var (
@@ -413,4 +414,56 @@ func (context *Context) DrawStringWrapped(s string, x, y, ax, ay, width, lineSpa
 		context.DrawStringAnchored(line, x, y, ax, ay)
 		y += context.fontHeight * lineSpacing
 	}
+}
+
+func (context *Context) NewSubPath() {
+	if context.hasCurrent {
+		context.fillPath.Add1(context.start.Fixed())
+	}
+	context.hasCurrent = false
+}
+
+func (context *Context) QuadraticTo(x1, y1, x2, y2 float64) {
+	if !context.hasCurrent {
+		context.MoveTo(x1, y1)
+	}
+	x1, y1 = context.TransformPoint(x1, y1)
+	x2, y2 = context.TransformPoint(x2, y2)
+	p1 := Point{x1, y1}
+	p2 := Point{x2, y2}
+	context.strokePath.Add2(p1.Fixed(), p2.Fixed())
+	context.fillPath.Add2(p1.Fixed(), p2.Fixed())
+	context.current = p2
+}
+
+func (context *Context) DrawEllipticalArc(x, y, rx, ry, angle1, angle2 float64) {
+	const n = 16
+	for i := 0; i < n; i++ {
+		p1 := float64(i+0) / n
+		p2 := float64(i+1) / n
+		a1 := angle1 + (angle2-angle1)*p1
+		a2 := angle1 + (angle2-angle1)*p2
+		x0 := x + rx*math.Cos(a1)
+		y0 := y + ry*math.Sin(a1)
+		x1 := x + rx*math.Cos((a1+a2)/2)
+		y1 := y + ry*math.Sin((a1+a2)/2)
+		x2 := x + rx*math.Cos(a2)
+		y2 := y + ry*math.Sin(a2)
+		cx := 2*x1 - x0/2 - x2/2
+		cy := 2*y1 - y0/2 - y2/2
+		if i == 0 {
+			if context.hasCurrent {
+				context.LineTo(x0, y0)
+			} else {
+				context.MoveTo(x0, y0)
+			}
+		}
+		context.QuadraticTo(cx, cy, x2, y2)
+	}
+}
+
+func (context *Context) DrawCircle(x, y, r float64) {
+	context.NewSubPath()
+	context.DrawEllipticalArc(x, y, r, r, 0, 2*math.Pi)
+	context.ClosePath()
 }

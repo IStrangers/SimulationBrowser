@@ -28,8 +28,10 @@ func calculateNode(context *renderer_structs.Context, node *renderer_structs.Nod
 		calculateBlockLayout(context, node, position)
 		break
 	case "inline":
+		calculateInlineLayout(context, node, position)
 		break
 	case "list-item":
+		calculateListItemLayout(context, node, position)
 		break
 	}
 }
@@ -43,8 +45,10 @@ func paintNode(context *renderer_structs.Context, node *renderer_structs.NodeDOM
 		paintBlockElement(context, node)
 		break
 	case "inline":
+		paintInlineElement(context, node)
 		break
 	case "list-item":
+		paintListItemElement(context, node)
 		break
 	}
 }
