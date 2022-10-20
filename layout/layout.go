@@ -2,7 +2,7 @@ package layout
 
 import renderer_structs "renderer/structs"
 
-func LayoutDocument(context *renderer_structs.Context, document *renderer_structs.Document) error {
+func LayoutAndRenderDocument(context *renderer_structs.Context, document *renderer_structs.Document) error {
 	body, _ := document.DOM.FindChildByName("body")
 
 	document.DOM.RenderBox.Width = float64(context.Width())

@@ -44,7 +44,7 @@ func GetViewportRenderer(webBrowser *WebBrowser) func(*ui_structs.CanvasWidget) 
 			ctxBounds := canvas.GetContext().GetImage().Bounds()
 			drawingContext := renderer_structs.CreateContext(ctxBounds.Max.X, ctxBounds.Max.Y)
 
-			err := layout.LayoutDocument(drawingContext, document)
+			err := layout.LayoutAndRenderDocument(drawingContext, document)
 			if err != nil {
 				log.Fatal("render", "Can't render page: "+err.Error())
 			}

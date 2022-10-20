@@ -72,7 +72,7 @@ func CalculateChildrenWidgetsLayout(children []*BaseWidget, top, left, width, he
 				prev := childrenLayout[i-1]
 				currentLayout.box.top = prev.box.top + prev.box.height
 			} else {
-				currentLayout.box.height = top
+				currentLayout.box.top = top
 			}
 
 			if children[i].fixedHeight {
