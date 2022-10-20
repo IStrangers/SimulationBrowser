@@ -8,13 +8,13 @@ import (
 type CanvasWidget struct {
 	BaseWidget
 
-	context *renderer_structs.Context
+	context        *renderer_structs.Context
 	drawingContext *renderer_structs.Context
 
 	renderer func(widget *CanvasWidget)
 
 	scrollable bool
-	offset int
+	offset     int
 
 	drawingRepaint bool
 }
@@ -25,18 +25,18 @@ func CreateCanvasWidget(renderer func(*CanvasWidget)) *CanvasWidget {
 	return &CanvasWidget{
 		BaseWidget: BaseWidget{
 			needsRepaint: true,
-			widgets: widgets,
+			widgets:      widgets,
 
 			widgetType: canvasWidget,
 
 			cursor: glfw.CreateStandardCursor(glfw.ArrowCursor),
 
-			backgroundColor: "#ffffff",
+			backgroundColor: "#fff",
 		},
 
-		context: renderer_structs.CreateContext(0,0),
-		drawingContext: renderer_structs.CreateContext(0,0),
-		renderer: renderer,
+		context:        renderer_structs.CreateContext(0, 0),
+		drawingContext: renderer_structs.CreateContext(0, 0),
+		renderer:       renderer,
 		drawingRepaint: true,
 	}
 }
@@ -102,5 +102,3 @@ func (canvas *CanvasWidget) draw() {
 	context.DrawImage(canvas.context.GetImage(), int(left), int(top))
 	CopyWidgetToBuffer(canvas, context.GetImage())
 }
-
-

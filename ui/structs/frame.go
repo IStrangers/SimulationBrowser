@@ -19,7 +19,7 @@ func CreateFrame(orientation FrameOrientation) *Frame {
 			needsRepaint: true,
 			widgets:      widgets,
 
-			backgroundColor: "#ffffff",
+			backgroundColor: "#fff",
 		},
 		orientation: orientation,
 	}
