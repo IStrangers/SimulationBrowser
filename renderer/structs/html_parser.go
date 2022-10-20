@@ -170,7 +170,9 @@ func (parser *HTMLParser) parseComment(parent *NodeDOM) *NodeDOM {
 		Parent:      parent,
 		NodeType:    NodeType_Common,
 		NodeName:    "html:comment",
-		TextContent: content,
+		TextContent: strings.TrimSpace(content),
+		Style:       CreateCSSStyleSheetByInitialStyle("html:comment", ""),
+		RenderBox:   &RenderBox{},
 		Location:    parser.getSelection(startCursor, parser.getCursor()),
 	}
 }
@@ -322,7 +324,9 @@ func (parser *HTMLParser) parseText(parent *NodeDOM) *NodeDOM {
 		Parent:      parent,
 		NodeType:    NodeType_Text,
 		NodeName:    "html:text",
-		TextContent: content,
+		TextContent: strings.TrimSpace(content),
+		Style:       CreateCSSStyleSheetByInitialStyle("html:text", ""),
+		RenderBox:   &RenderBox{},
 		Location:    parser.getSelection(startCursor, parser.getCursor()),
 	}
 }

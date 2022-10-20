@@ -91,7 +91,7 @@ func getDefaultElementDisplay(nodeName string) string {
 	displayType := "block"
 
 	switch nodeName {
-	case "script", "style", "meta", "link", "head", "title":
+	case "html:comment", "script", "style", "meta", "link", "head", "title":
 		displayType = "none"
 	case "li":
 		displayType = "list-item"

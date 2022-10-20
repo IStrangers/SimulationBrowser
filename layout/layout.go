@@ -20,9 +20,6 @@ func getNodeChildren(node *renderer_structs.NodeDOM) []*renderer_structs.NodeDOM
 }
 
 func calculateNode(context *renderer_structs.Context, node *renderer_structs.NodeDOM, position int) {
-	if node.Style == nil {
-		return
-	}
 	switch node.Style.Display {
 	case "block":
 		calculateBlockLayout(context, node, position)
@@ -37,9 +34,6 @@ func calculateNode(context *renderer_structs.Context, node *renderer_structs.Nod
 }
 
 func paintNode(context *renderer_structs.Context, node *renderer_structs.NodeDOM) {
-	if node.Style == nil {
-		return
-	}
 	switch node.Style.Display {
 	case "block":
 		paintBlockElement(context, node)
