@@ -58,11 +58,25 @@ func GetHomepage() string {
 }
 
 func GetHistoryPage() string {
-	return ``
+	return `<html>
+		<head>
+			<title>HomePage</title>
+		</head>
+		<body>
+			History
+		</body>
+	</html>`
 }
 
 func GetAboutPage() string {
-	return ``
+	return `<html>
+		<head>
+			<title>HomePage</title>
+		</head>
+		<body>
+			About
+		</body>
+	</html>`
 }
 
 func getInternalPage(URL *url.URL) *filesystem_structs.Resource {
