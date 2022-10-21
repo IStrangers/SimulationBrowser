@@ -127,7 +127,7 @@ func (context *Context) MoveTo(x float64, y float64) {
 	context.fillPath.Start(point.Fixed())
 	context.start = point
 	context.current = point
-	context.hasCurrent = false
+	context.hasCurrent = true
 }
 
 /*
