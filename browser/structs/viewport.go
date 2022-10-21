@@ -50,13 +50,13 @@ func GetViewportRenderer(webBrowser *WebBrowser) func(*ui_structs.CanvasWidget) 
 			}
 
 			canvas.SetContext(drawingContext)
-			canvas.RequestReflow()
+			canvas.RequestRepaint()
 			profiler.Stop("render")
 
 			statusLabel := headBar.StatusLabel
 			statusLabel.SetContent(createStatusLabel(profiler))
-			statusLabel.RequestReflow()
-			canvas.RequestReflow()
+			statusLabel.RequestRepaint()
+			canvas.RequestRepaint()
 
 			body, err := webBrowser.CurrentDocument.DOM.FindChildByName("body")
 			if err != nil {
