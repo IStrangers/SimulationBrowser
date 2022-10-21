@@ -1,9 +1,9 @@
 package structs
 
 import (
-	"layout"
 	"log"
 	profiler_structs "profiler/structs"
+	"renderer"
 	renderer_structs "renderer/structs"
 	ui_structs "ui/structs"
 )
@@ -44,7 +44,7 @@ func GetViewportRenderer(webBrowser *WebBrowser) func(*ui_structs.CanvasWidget) 
 			ctxBounds := canvas.GetContext().GetImage().Bounds()
 			drawingContext := renderer_structs.CreateContext(ctxBounds.Max.X, ctxBounds.Max.Y)
 
-			err := layout.LayoutAndRenderDocument(drawingContext, document)
+			err := renderer.RenderDocument(drawingContext, document)
 			if err != nil {
 				log.Fatal("render", "Can't render page: "+err.Error())
 			}
