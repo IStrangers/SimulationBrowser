@@ -25,16 +25,16 @@ func CreateHeadBar() *HeadBar {
 	icon := ui_structs.CreateFrame(ui_structs.VerticalFrame)
 	img := ui_structs.CreateImageWidget(assets.Logo())
 
-	previousButton := ui_structs.CreateButtonWidget("", []byte(""))
+	previousButton := ui_structs.CreateButtonWidget("", assets.Previous())
 	previousButton.SetWidth(30)
 
-	nextButton := ui_structs.CreateButtonWidget("", []byte(""))
+	nextButton := ui_structs.CreateButtonWidget("", assets.Next())
 	nextButton.SetWidth(30)
 
-	reloadButton := ui_structs.CreateButtonWidget("", []byte(""))
+	reloadButton := ui_structs.CreateButtonWidget("", assets.Reload())
 	reloadButton.SetWidth(30)
 
-	toolsButton := ui_structs.CreateButtonWidget("", []byte(""))
+	toolsButton := ui_structs.CreateButtonWidget("", assets.Tools())
 	toolsButton.SetWidth(34)
 
 	rv := ui_structs.CreateFrame(ui_structs.HorizontalFrame)
