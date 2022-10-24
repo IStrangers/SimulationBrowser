@@ -6,10 +6,12 @@ import (
 )
 
 func RenderDocument(context *renderer_structs.Context, document *renderer_structs.Document) error {
-	body, _ := document.DOM.FindChildByName("body")
 
-	document.DOM.RenderBox.Width = float64(context.Width())
-	document.DOM.RenderBox.Height = float64(context.Height())
+	html, _ := document.DOM.FindChildByName("html")
+	html.RenderBox.Width = float64(context.Width())
+	html.RenderBox.Height = float64(context.Height())
+
+	body, _ := html.FindChildByName("body")
 
 	context.SetRGB(1, 1, 1)
 	context.Clear()
