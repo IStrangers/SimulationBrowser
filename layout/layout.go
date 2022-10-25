@@ -17,7 +17,14 @@ func LayoutDOM(context *renderer_structs.Context, node *renderer_structs.NodeDOM
 }
 
 func getNodeChildren(node *renderer_structs.NodeDOM) []*renderer_structs.NodeDOM {
-	return node.Children
+	var newChildren []*renderer_structs.NodeDOM
+	for _, child := range node.Children {
+		if child.Style.Display == "none" {
+			continue
+		}
+		newChildren = append(newChildren, child)
+	}
+	return newChildren
 }
 
 func calculateNode(context *renderer_structs.Context, node *renderer_structs.NodeDOM, position int) {
