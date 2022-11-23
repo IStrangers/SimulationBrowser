@@ -1,6 +1,6 @@
 package structs
 
-import renderer_structs "renderer/structs"
+import renderer_structs "SimulationBrowser/renderer/structs"
 
 type MenuEntry struct {
 	entryText string

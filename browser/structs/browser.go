@@ -1,13 +1,13 @@
 package structs
 
 import (
-	"filesystem"
+	"SimulationBrowser/filesystem"
+	"SimulationBrowser/renderer"
+	renderer_structs "SimulationBrowser/renderer/structs"
+	ui_structs "SimulationBrowser/ui/structs"
 	"fmt"
 	"image"
-	"renderer"
-	renderer_structs "renderer/structs"
 	"strings"
-	ui_structs "ui/structs"
 )
 
 func loadDocument(webBrowser *WebBrowser, url string) {

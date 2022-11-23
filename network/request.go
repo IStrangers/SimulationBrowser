@@ -1,11 +1,11 @@
 package network
 
 import (
-	"common"
+	"SimulationBrowser/common"
+	network_structs "SimulationBrowser/network/structs"
 	"io"
 	"log"
 	"net/http"
-	network_structs "network/structs"
 	"strings"
 )
 

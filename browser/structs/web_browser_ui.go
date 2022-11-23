@@ -1,9 +1,9 @@
 package structs
 
 import (
-	"common"
+	"SimulationBrowser/common"
+	ui_structs "SimulationBrowser/ui/structs"
 	"log"
-	ui_structs "ui/structs"
 )
 
 type WebBrowserUI struct {

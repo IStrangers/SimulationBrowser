@@ -1,9 +1,9 @@
 package structs
 
 import (
-	"assets"
-	"common"
-	ui_structs "ui/structs"
+	"SimulationBrowser/assets"
+	"SimulationBrowser/common"
+	ui_structs "SimulationBrowser/ui/structs"
 )
 
 type HeadBar struct {

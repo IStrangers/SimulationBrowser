@@ -1,11 +1,11 @@
 package structs
 
 import (
+	profiler_structs "SimulationBrowser/profiler/structs"
+	"SimulationBrowser/renderer"
+	renderer_structs "SimulationBrowser/renderer/structs"
+	ui_structs "SimulationBrowser/ui/structs"
 	"log"
-	profiler_structs "profiler/structs"
-	"renderer"
-	renderer_structs "renderer/structs"
-	ui_structs "ui/structs"
 )
 
 type Viewport struct {

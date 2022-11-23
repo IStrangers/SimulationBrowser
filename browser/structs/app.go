@@ -1,6 +1,6 @@
 package structs
 
-import ui_structs "ui/structs"
+import ui_structs "SimulationBrowser/ui/structs"
 
 type App struct {
 	name    string

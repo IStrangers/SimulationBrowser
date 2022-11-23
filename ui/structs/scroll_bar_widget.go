@@ -1,7 +1,7 @@
 package structs
 
 import (
-	"assets"
+	"SimulationBrowser/assets"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/goki/freetype/truetype"
 )
@@ -10,23 +10,23 @@ type ScrollBarWidget struct {
 	BaseWidget
 
 	orientation ScrollBarOrientation
-	selected bool
-	thumbSize float64
-	thumbColor string
+	selected    bool
+	thumbSize   float64
+	thumbColor  string
 
-	scrollerSize float64
+	scrollerSize   float64
 	scrollerOffset float64
 }
 
 func CreateScrollBarWidget(orientation ScrollBarOrientation) *ScrollBarWidget {
 	var widgets []Widget
-	font,_ := truetype.Parse(assets.OpenSans(400))
+	font, _ := truetype.Parse(assets.OpenSans(400))
 
-	return &ScrollBarWidget {
+	return &ScrollBarWidget{
 		BaseWidget: BaseWidget{
 
 			needsRepaint: true,
-			widgets: widgets,
+			widgets:      widgets,
 
 			widgetType: scrollbarWidget,
 
@@ -40,7 +40,7 @@ func CreateScrollBarWidget(orientation ScrollBarOrientation) *ScrollBarWidget {
 	}
 }
 
-func (scrollBar *ScrollBarWidget) SetWidth(width float64)  {
+func (scrollBar *ScrollBarWidget) SetWidth(width float64) {
 	scrollBar.box.width = width
 	scrollBar.fixedWidth = true
 	scrollBar.RequestReflow()
@@ -83,10 +83,10 @@ func (scrollBar *ScrollBarWidget) draw() {
 	context := scrollBar.window.context
 	computedBox := scrollBar.computedBox
 
-	top,left,width,height := computedBox.top,computedBox.left,computedBox.width,computedBox.height
+	top, left, width, height := computedBox.top, computedBox.left, computedBox.width, computedBox.height
 
 	context.SetHexColor(scrollBar.backgroundColor)
-	context.DrawRectangle(left,top,width,height)
+	context.DrawRectangle(left, top, width, height)
 	context.Fill()
 
 	if scrollBar.scrollerSize > height {
@@ -96,9 +96,9 @@ func (scrollBar *ScrollBarWidget) draw() {
 		scrollJump := (scrollBar.scrollerSize - height) / (height - thumbSize)
 
 		context.SetHexColor(scrollBar.thumbColor)
-		context.DrawRectangle(left + 1,top - (thumbOffset / scrollJump),width - 2,thumbSize)
+		context.DrawRectangle(left+1, top-(thumbOffset/scrollJump), width-2, thumbSize)
 		context.Fill()
 	}
 
-	CopyWidgetToBuffer(scrollBar,context.GetImage())
+	CopyWidgetToBuffer(scrollBar, context.GetImage())
 }

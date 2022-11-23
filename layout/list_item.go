@@ -1,6 +1,6 @@
 package layout
 
-import renderer_structs "renderer/structs"
+import renderer_structs "SimulationBrowser/renderer/structs"
 
 func paintListItemElement(context *renderer_structs.Context, node *renderer_structs.NodeDOM) {
 	style := node.Style

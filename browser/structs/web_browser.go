@@ -1,11 +1,11 @@
 package structs
 
 import (
-	"common"
-	profiler_structs "profiler/structs"
-	renderer_structs "renderer/structs"
+	"SimulationBrowser/common"
+	profiler_structs "SimulationBrowser/profiler/structs"
+	renderer_structs "SimulationBrowser/renderer/structs"
+	ui_structs "SimulationBrowser/ui/structs"
 	"runtime"
-	ui_structs "ui/structs"
 )
 
 type WebBrowser struct {

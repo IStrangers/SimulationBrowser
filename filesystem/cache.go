@@ -1,12 +1,12 @@
 package filesystem
 
 import (
-	"common"
+	"SimulationBrowser/common"
+	filesystem_structs "SimulationBrowser/filesystem/structs"
+	"SimulationBrowser/network"
 	"encoding/base64"
-	filesystem_structs "filesystem/structs"
 	"fmt"
 	"net/url"
-	"network"
 	"strings"
 )
 

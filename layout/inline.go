@@ -1,11 +1,11 @@
 package layout
 
 import (
+	"SimulationBrowser/filesystem"
+	renderer_structs "SimulationBrowser/renderer/structs"
 	"bytes"
-	"filesystem"
 	"fmt"
 	"image"
-	renderer_structs "renderer/structs"
 )
 
 func paintInlineElement(context *renderer_structs.Context, node *renderer_structs.NodeDOM) {

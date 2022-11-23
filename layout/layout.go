@@ -1,6 +1,6 @@
 package layout
 
-import renderer_structs "renderer/structs"
+import renderer_structs "SimulationBrowser/renderer/structs"
 
 func LayoutDOM(context *renderer_structs.Context, node *renderer_structs.NodeDOM, childIndex int) {
 	nodeChildren := getNodeChildren(node)

@@ -1,12 +1,13 @@
-package main
+package SimulationBrowser
 
 import (
-	"browser"
-	"filesystem"
-	"renderer"
+	"SimulationBrowser/browser"
+	"SimulationBrowser/filesystem"
+	"SimulationBrowser/renderer"
+	"testing"
 )
 
-func main() {
+func TestBrowser(t *testing.T) {
 	document := renderer.ParseHTMLDocument(`
 		<div  id="container" name='QQxQQ' age=18 >
 			<ul class="ul">

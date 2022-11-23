@@ -1,7 +1,7 @@
 package structs
 
 import (
-	"common"
+	"SimulationBrowser/common"
 	"errors"
 	"strings"
 )

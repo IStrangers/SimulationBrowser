@@ -1,11 +1,11 @@
 package structs
 
 import (
-	"assets"
+	"SimulationBrowser/assets"
+	renderer_structs "SimulationBrowser/renderer/structs"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/goki/freetype/truetype"
 	"image"
-	renderer_structs "renderer/structs"
 )
 
 type TreeWidget struct {

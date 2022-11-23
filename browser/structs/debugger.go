@@ -1,8 +1,8 @@
 package structs
 
 import (
-	renderer_structs "renderer/structs"
-	ui_structs "ui/structs"
+	renderer_structs "SimulationBrowser/renderer/structs"
+	ui_structs "SimulationBrowser/ui/structs"
 )
 
 type Debugger struct {

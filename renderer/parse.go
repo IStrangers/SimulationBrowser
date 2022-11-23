@@ -1,7 +1,7 @@
 package renderer
 
 import (
-	renderer_structs "renderer/structs"
+	renderer_structs "SimulationBrowser/renderer/structs"
 )
 
 func ParseHTMLDocument(html string) *renderer_structs.Document {

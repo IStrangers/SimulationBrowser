@@ -1,8 +1,8 @@
 package structs
 
 import (
+	renderer_structs "SimulationBrowser/renderer/structs"
 	"github.com/go-gl/glfw/v3.3/glfw"
-	renderer_structs "renderer/structs"
 )
 
 type CanvasWidget struct {

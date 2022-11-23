@@ -1,10 +1,10 @@
 package structs
 
 import (
-	"assets"
+	"SimulationBrowser/assets"
+	renderer_structs "SimulationBrowser/renderer/structs"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/goki/freetype/truetype"
-	renderer_structs "renderer/structs"
 )
 
 type InputWidget struct {

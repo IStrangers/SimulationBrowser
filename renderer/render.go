@@ -1,8 +1,8 @@
 package renderer
 
 import (
-	"layout"
-	renderer_structs "renderer/structs"
+	"SimulationBrowser/layout"
+	renderer_structs "SimulationBrowser/renderer/structs"
 )
 
 func RenderDocument(context *renderer_structs.Context, document *renderer_structs.Document) error {

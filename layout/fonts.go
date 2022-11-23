@@ -1,7 +1,7 @@
 package layout
 
 import (
-	"assets"
+	"SimulationBrowser/assets"
 	"github.com/goki/freetype/truetype"
 )
 
