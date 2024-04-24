@@ -1,7 +1,7 @@
 # Aix
 
 #### Description
-模拟浏览器，实现页面下载、HTML解析、CSS解析、布局、渲染、浏览器UI
+实现一个简单的浏览器，包括页面下载、HTML解析、CSS解析、布局、渲染、浏览器UI
 
 #### Software Architecture
 Software architecture description
