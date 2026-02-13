@@ -1,37 +1,84 @@
-# Aix
-
-#### 介绍
-实现一个简单的浏览器，包括页面下载、HTML解析、CSS解析、布局、渲染、浏览器UI
-
-#### 软件架构
-软件架构说明
 
 
-#### 安装教程
+# Aix - 简单浏览器模拟器
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+一个用 Go 语言编写的轻量级浏览器引擎实现，涵盖页面下载、HTML/CSS 解析、布局计算、渲染和基础 UI 交互功能。
 
-#### 使用说明
+## 功能特性
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+- **网络请求**：支持 HTTP GET/POST 请求，可自定义请求头
+- **HTML 解析**：完整的 DOM 树构建，支持元素、文本、注释节点
+- **CSS 解析**：CSS 规则选择器和声明项解析，支持内联样式
+- **布局引擎**：块级元素、行内元素、列表项的自动布局计算
+- **渲染引擎**：
+  - 2D 绘图上下文，支持路径、文本、图像渲染
+  - 贝塞尔曲线和几何图形绘制
+  - 颜色处理和字体渲染
+- **历史管理**：浏览历史记录，支持前进/后退
+- **调试功能**：DOM 树可视化、性能分析、性能剖析器
+- **UI 组件**：
+  - 窗口、框架、按钮、输入框、标签
+  - 画布控件（用于渲染页面）
+  - 树形控件（用于调试器）
+  - 滚动条、上下文菜单
+  - 事件处理（鼠标点击、滚动、键盘导航）
 
-#### 参与贡献
+## 项目结构
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+```
+Aix/
+├── assets/              # 资源文件（图标、字体）
+├── browser/            # 浏览器核心实现
+│   └── structs/        # 浏览器各模块结构
+├── common/             # 公共工具（Base64、缓存、流处理）
+├── filesystem/         # 文件系统（缓存、资源加载）
+├── layout/             # 布局引擎
+├── network/            # 网络请求模块
+├── profiler/           # 性能分析模块
+├── renderer/           # 渲染引擎
+│   └── structs/       # 渲染相关结构
+├── ui/                 # UI 组件库
+│   └── structs/       # UI 控件结构
+├── settings.json       # 配置文件
+├── main_test.go        # 测试文件
+├── go.mod              # Go 模块定义
+└── LICENSE             # 许可证
+```
 
+## 快速开始
 
-#### 特技
+### 环境要求
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+- Go 1.20+
+- GLFW 3.x
+
+### 安装依赖
+
+```bash
+go mod tidy
+```
+
+### 运行程序
+
+```bash
+go run main.go
+```
+
+## 使用说明
+
+1. 在地址栏输入 URL 并按回车访问网页
+2. 使用工具栏按钮进行刷新、前进、后退操作
+3. 滚动页面查看内容
+4. 右键点击打开上下文菜单
+
+## 依赖项
+
+- **github.com/go-gl/glfw/v3.3/glfw**：窗口和输入管理
+- **github.com/go-gl/mathgl/mgl64**：数学运算（矩阵、向量）
+- **golang.org/x/image**：图像处理
+- **golang.org/x/net**：网络功能
+- **github.com/sqwk/feeds**：Feed 解析
+
+## 许可证
+
+本项目遵循 MIT 许可证。
